@@ -1,0 +1,14 @@
+﻿@page "/account/identity/logout"
+
+@using Documancer.Application.DataTransferObjects.Request.Account
+
+@code
+{
+    protected async override Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(new LocalStorageDTO());
+
+        NavigationManager.NavigateTo("account/identity/login", true);
+    }
+}

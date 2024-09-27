@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documancer", "Documancer", "{7309E7CF-F6DA-4646-B3C8-AEA4333E2F15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.Domain", "Documancer.Domain\Documancer.Domain.csproj", "{702B3F56-973E-47C6-9273-9BF8BD26D659}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.Application", "Documancer.Application\Documancer.Application.csproj", "{9EBC38AD-1032-4662-A209-45434EC9FD30}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.Infrastructure", "Documancer.Infrastructure\Documancer.Infrastructure.csproj", "{76573B8E-B696-433D-B7A7-A3C814C7453F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documancer.Web", "Documancer.Web", "{5C803EA5-4DF3-42A2-A737-D1122A93D42C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.API", "Documancer.API\Documancer.API.csproj", "{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.Client", "Documancer.Client\Documancer.Client.csproj", "{B7E15F50-2EC3-43CF-8A99-934C814E159E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{702B3F56-973E-47C6-9273-9BF8BD26D659}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702B3F56-973E-47C6-9273-9BF8BD26D659}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702B3F56-973E-47C6-9273-9BF8BD26D659}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702B3F56-973E-47C6-9273-9BF8BD26D659}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EBC38AD-1032-4662-A209-45434EC9FD30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EBC38AD-1032-4662-A209-45434EC9FD30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EBC38AD-1032-4662-A209-45434EC9FD30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EBC38AD-1032-4662-A209-45434EC9FD30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76573B8E-B696-433D-B7A7-A3C814C7453F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76573B8E-B696-433D-B7A7-A3C814C7453F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76573B8E-B696-433D-B7A7-A3C814C7453F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76573B8E-B696-433D-B7A7-A3C814C7453F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7E15F50-2EC3-43CF-8A99-934C814E159E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E15F50-2EC3-43CF-8A99-934C814E159E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E15F50-2EC3-43CF-8A99-934C814E159E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E15F50-2EC3-43CF-8A99-934C814E159E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{702B3F56-973E-47C6-9273-9BF8BD26D659} = {7309E7CF-F6DA-4646-B3C8-AEA4333E2F15}
+		{9EBC38AD-1032-4662-A209-45434EC9FD30} = {7309E7CF-F6DA-4646-B3C8-AEA4333E2F15}
+		{76573B8E-B696-433D-B7A7-A3C814C7453F} = {7309E7CF-F6DA-4646-B3C8-AEA4333E2F15}
+		{5C803EA5-4DF3-42A2-A737-D1122A93D42C} = {7309E7CF-F6DA-4646-B3C8-AEA4333E2F15}
+		{484B96D4-5DA1-46F0-B90D-2B4EA2A195C3} = {5C803EA5-4DF3-42A2-A737-D1122A93D42C}
+		{B7E15F50-2EC3-43CF-8A99-934C814E159E} = {5C803EA5-4DF3-42A2-A737-D1122A93D42C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C48AC231-17DE-4D00-B402-2CD83B4E260F}
+	EndGlobalSection
+EndGlobal
