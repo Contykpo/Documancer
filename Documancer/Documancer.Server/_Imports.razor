@@ -1,0 +1,76 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Reflection
+@using System.Text
+@using System.ComponentModel
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Localization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+
+@using MudBlazor
+
+@using MediatR
+
+@using AutoMapper
+
+@using FluentValidation;
+
+@using Documancer.Domain
+
+@using Documancer.Application.Common.Interfaces.MediatorWrapper
+@using Documancer.Application.Common.ExceptionHandlers
+@using Documancer.Application.Common.Extensions
+@using Documancer.Application.Common.Interfaces
+@using Documancer.Application.Common.Models
+@using Documancer.Application.Common.Security
+
+@using Documancer.Infrastructure.PermissionSet;
+@using Documancer.Infrastructure.Constants
+@using Documancer.Infrastructure.Extensions
+@using Documancer.Infrastructure.Configurations
+
+@using Documancer.Server
+@using Documancer.Server.Shared
+@using Documancer.Server.Models
+@using Documancer.Server.Components
+@using Documancer.Server.Components.Forms
+@using Documancer.Server.Components.Breadcrumbs
+@using Documancer.Server.Components.LoadingButton
+@using Documancer.Server.Components.Autocompletes
+@using Documancer.Server.Components.Dialogs
+@using Documancer.Server.Components.Identity
+@using Documancer.Server.Components.Localization
+@using Documancer.Server.Components.OptionSelect
+@using Documancer.Server.Components.Redirections
+@using Documancer.Server.Components.Shared
+@using Documancer.Server.Components.Shared.Themes
+@using Documancer.Server.Components.Shared.Layout
+@using Documancer.Server.Pages.Identity.Authentication
+@using Documancer.Server.Services
+@using Documancer.Server.Services.Layout
+@using Documancer.Server.Extensions
+
+@using Severity=MudBlazor.Severity
+@using Color = MudBlazor.Color
+
+@inject IApplicationSettings ApplicationSettings
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IConfiguration Config
+@inject IAuthorizationService AuthService
+@inject IValidationService Validator
+@inject IJSRuntime JS
+@inject IScopedMediator Mediator
+@inject IMapper Mapper
+@inject NavigationManager Navigation
+@inject DialogServiceHelper DialogServiceHelper

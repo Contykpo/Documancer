@@ -1,0 +1,10 @@
+﻿@code
+{
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Yield();
+        Navigation.NavigateTo("/pages/authentication/login", true);
+    }
+
+}

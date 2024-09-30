@@ -1,0 +1,520 @@
+﻿@page "/identity/roles"
+
+@using Documancer.Application.Common.Interfaces.MultiTenant
+@using Documancer.Domain.Identity
+@using Documancer.Application.Features.Identity.DTOs
+@using System.Security.Claims
+@using Documancer.Server.Pages.Identity.Roles.Components
+@using Documancer.Infrastructure.Constants.ClaimTypes
+@using ZiggyCreatures.Caching.Fusion
+
+@attribute [Authorize(Policy = Permissions.Roles.View)]
+
+@inherits OwningComponentBase
+
+@inject ITenantService TenantsService
+@inject IFusionCache FusionCache
+@inject IStringLocalizer<Roles> L
+
+<PageTitle>@Title</PageTitle>
+
+<MudDataGrid @ref="_table"
+             FixedHeader="true"
+             FixedFooter="false"
+             Height="calc(100vh - 300px)"
+             Hover="true"
+             MultiSelection="true"
+             @bind-RowsPerPage="_defaultPageSize"
+             @bind-SelectedItems="_selectedItems"
+             Loading="@_loading"
+             ServerData="@(ServerReload)">
+    <ToolBarContent>
+        <div class="d-flex align-start flex-grow-1">
+            <div class="d-flex gap-4">
+                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large" />
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.caption">@Title</MudText>
+                    <MudSelect T="string" Style="min-width:120px" ValueChanged="OnChangedListView" Value="@_selectedTenantId" Dense="true" Label="@L["List View"]">
+                        <MudSelectItem T="string" Value="@(" ")">@L["ALL"]</MudSelectItem>
+                        @foreach (var item in TenantsService.DataSource)
+                        {
+                            <MudSelectItem T="string" Value="@item.Id">@item.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            </div>
+            <div class="flex-grow-1" />
+            <div class="d-flex flex-column justify-end">
+                <div class="d-flex gap-1">
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudButton Variant="Variant.Outlined"
+                                   Size="Size.Small"
+                                   OnClick="OnRefresh"
+                                   Disabled="@_loading"
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
+                            @ConstantString.Refresh
+                        </MudButton>
+                        @if (_canCreate)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Size="Size.Small"
+                                       OnClick="OnCreate"
+                                       IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
+                        }
+                        @if (_canDelete)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.Delete"
+                                       Disabled="@(!(_selectedItems.Count > 0))"
+                                       OnClick="OnDeleteChecked"
+                                       Size="Size.Small"
+                                       IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
+                        }
+
+                        @if (_canExport)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Download"
+                                       Size="Size.Small"
+                                       IconColor="Color.Surface">
+                                @ConstantString.Export
+                            </MudButton>
+                        }
+                        @if (_canImport)
+                        {
+                            <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
+                                <ActivatorContent>
+                                    <MudButton Size="Size.Small"
+                                               Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               Disabled="@_loading"
+                                               StartIcon="@Icons.Material.Filled.Upload">
+                                        @if (_uploading)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                            @ConstantString.Uploading
+                                        }
+                                        else
+                                        {
+                                            @ConstantString.Import
+                                        }
+                                    </MudButton>
+                                </ActivatorContent>
+                            </MudFileUpload>
+                        }
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                        @if (_canCreate)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Size="Size.Small"
+                                       OnClick="OnCreate"
+                                       IconColor="Color.Surface">
+                                @ConstantString.New
+                            </MudButton>
+                        }
+                        @if (_canDelete)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.Delete"
+                                       Disabled="@(!(_selectedItems.Count > 0))"
+                                       OnClick="OnDeleteChecked"
+                                       Size="Size.Small"
+                                       IconColor="Color.Surface">
+                                @ConstantString.Delete
+                            </MudButton>
+                        }
+                    </MudHidden>
+                </div>
+                @if (_canSearch)
+                {
+                    <MudTextField T="string" Immediate="false" Value="_searchString" FullWidth="false" ValueChanged="@(OnSearch)"
+                                  Placeholder="@(L["Search by role name"])" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                    </MudTextField>
+                }
+
+            </div>
+        </div>
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn ShowInFooter="false"></SelectColumn>
+        <TemplateColumn HeaderStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                @if (_canEdit || _canDelete || _canManagePermissions)
+                {
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
+                             Dense="true"
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        @if (_canEdit)
+                        {
+                            <MudMenuItem OnClick="@(() => OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                        }
+                        @if (_canDelete)
+                        {
+                            <MudMenuItem OnClick="@(() => OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                        }
+                        @if (_canManagePermissions)
+                        {
+                            <MudMenuItem OnClick="@(() => OnSetPermissions(context.Item))">@L["Set Permissions"]</MudMenuItem>
+                        }
+                    </MudMenu>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                               Color="Color.Surface">
+                        @ConstantString.NoAllowed
+                    </MudButton>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.TenantName" Title="@L[_currentDto.GetMemberDescription(x => x.TenantName)]">
+            <CellTemplate>
+                    <MudText>@context.Item.TenantName</MudText>
+            </CellTemplate>
+            <FooterTemplate>
+                @L["Selected"]: @_selectedItems.Count
+            </FooterTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]">
+            <CellTemplate>
+                <div class="d-flex flex-column">
+                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.Description</MudText>
+                </div>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+    </PagerContent>
+</MudDataGrid>
+
+<PermissionsDrawer OnAssignAllChanged="OnAssignAllChangedHandler" Waiting="@_processing" OnOpenChanged="OnOpenChangedHandler" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="OnAssignChangedHandler"></PermissionsDrawer>
+
+<style>
+    .mud-table-toolbar {
+        height: 120px !important;
+    }
+</style>
+
+@code
+{
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    
+    private RoleManager<ApplicationRole> RoleManager = null!;
+    private string? Title { get; set; }
+    private bool _processing;
+    private string _currentRoleName = string.Empty;
+    private int _defaultPageSize = 15;
+    private HashSet<ApplicationRoleDto> _selectedItems = new();
+    private readonly ApplicationRoleDto _currentDto = new();
+    private string _searchString = string.Empty;
+    private string _selectedTenantId = " ";
+    private TimeSpan RefreshInterval => TimeSpan.FromHours(2);
+
+    private IList<PermissionModel> _permissions = new List<PermissionModel>();
+    private IList<Claim> _assignedClaims = default!;
+    private MudDataGrid<ApplicationRoleDto> _table = null!;
+    private bool _canCreate;
+    private bool _canSearch;
+    private bool _canEdit;
+    private bool _canDelete;
+    private bool _canManagePermissions;
+    private bool _canImport;
+    private bool _canExport;
+    private bool _showPermissionsDrawer;
+    private bool _loading;
+    private bool _uploading;
+    private PermissionHelper PermissionHelper = null!;
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        InitializeServices();
+        Title = L[_currentDto.GetClassDescription()];
+        var state = await AuthState;
+        _canCreate = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Create)).Succeeded;
+        _canSearch = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Search)).Succeeded;
+        _canEdit = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Edit)).Succeeded;
+        _canDelete = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.Delete)).Succeeded;
+        _canManagePermissions = (await AuthService.AuthorizeAsync(state.User, Permissions.Roles.ManagePermissions)).Succeeded;
+        _canImport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Import)).Succeeded;
+        _canExport = false; // (await AuthService.AuthorizeAsync(state.User, Permissions.Users.Export)).Succeeded;
+    }
+    
+    private void InitializeServices()
+    {
+        RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
+        PermissionHelper = ScopedServices.GetRequiredService<PermissionHelper>();
+    }
+    
+    private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)
+    {
+        try
+        {
+            _loading = true;
+            var items = await RoleManager.Roles
+                .Where(x => (x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString)) && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)))
+                .EfOrderBySortDefinitions(state)
+                .Skip(state.Page * state.PageSize).Take(state.PageSize)
+                .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
+                .ToListAsync();
+            var total = await RoleManager.Roles.CountAsync(x => (x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString)) && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)));
+            return new GridData<ApplicationRoleDto> { TotalItems = total, Items = items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+    
+    private async Task OnChangedListView(string tenantId)
+    {
+        _selectedTenantId = tenantId;
+        await _table.ReloadServerData();
+    }
+    
+    private async Task OnSearch(string text)
+    {
+        if (_loading)
+            return;
+        _searchString = text.ToLower();
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {
+        await _table.ReloadServerData();
+    }
+
+    private async Task OnCreate()
+    {
+        var model = new ApplicationRoleDto { Name = "" };
+        
+        await ShowRoleDialog(model, L["Create a new role"], async role =>
+        {
+            var state = await RoleManager.CreateAsync(role);
+            return state;
+        });
+    }
+
+    private async Task OnEdit(ApplicationRoleDto item)
+    {
+        await ShowRoleDialog(item, L["Edit the role"], async role =>
+        {
+            var existingRole = await RoleManager.FindByIdAsync(item.Id);
+            if (existingRole is not null)
+            {
+                existingRole.TenantId = item.TenantId;
+                existingRole.Description = item.Description;
+                existingRole.Name = item.Name;
+                var state = await RoleManager.UpdateAsync(existingRole);
+                return state;
+            }
+            return IdentityResult.Failed(new IdentityError { Description = "Role not found." });
+        });
+    }
+
+    private async Task ShowRoleDialog(ApplicationRoleDto model, string title, Func<ApplicationRole, Task<IdentityResult>> saveAction)
+    {
+        var parameters = new DialogParameters<RoleFormDialog> { { x => x.Model, model } };
+        var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<RoleFormDialog>(title, parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var applicationRole = new ApplicationRole
+                {
+                    TenantId = model.TenantId,
+                    Name = model.Name,
+                    Description = model.Description
+                };
+
+            var state = await saveAction(applicationRole);
+            if (state.Succeeded)
+            {
+                Snackbar.Add($"{ConstantString.CreateSuccess}", Severity.Info);
+                await OnRefresh();
+            }
+            else
+            {
+                Snackbar.Add($"{string.Join(",", state.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OnSetPermissions(ApplicationRoleDto item)
+    {
+        _showPermissionsDrawer = true;
+        _currentRoleName = item.Name!;
+        _permissions = await PermissionHelper.GetAllPermissionsByRoleId(item.Id);
+    }
+
+
+
+    private Task OnOpenChangedHandler(bool state)
+    {
+        _showPermissionsDrawer = state;
+        
+        return Task.CompletedTask;
+    }
+
+    private async Task OnAssignChangedHandler(PermissionModel model)
+    {
+        await ProcessPermissionChange(model, async (roleId, claim, assigned) =>
+        {
+            var role = await RoleManager.FindByIdAsync(roleId) ?? throw new NotFoundException($"Application role {roleId} Not Found.");
+            if (assigned)
+            {
+                await RoleManager.AddClaimAsync(role, claim);
+                Snackbar.Add($"{L["Permission assigned successfully"]}", Severity.Info);
+            }
+            else
+            {
+                await RoleManager.RemoveClaimAsync(role, claim);
+                Snackbar.Add($"{L["Permission removed successfully"]}", Severity.Info);
+            }
+        });
+    }
+
+    private async Task OnAssignAllChangedHandler(List<PermissionModel> models)
+    {
+        var roleClaimsDict = models.GroupBy(m => m.RoleId)
+                                    .ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var roleClaims in roleClaimsDict)
+        {
+            var roleId = roleClaims.Key;
+            var claims = roleClaims.Value.Select(m => new Claim(m.ClaimType, m.ClaimValue)).ToList();
+            var assignedClaims = roleClaims.Value.Where(m => m.Assigned).Select(m => new Claim(m.ClaimType, m.ClaimValue)).ToList();
+            var unassignedClaims = roleClaims.Value.Where(m => !m.Assigned).Select(m => new Claim(m.ClaimType, m.ClaimValue)).ToList();
+
+            await ProcessPermissionsBatch(roleId, assignedClaims, unassignedClaims);
+        }
+        Snackbar.Add($"{L["Authorization has been changed"]}", Severity.Info);
+    }
+
+    private async Task ProcessPermissionsBatch(string roleId, List<Claim> assignedClaims, List<Claim> unassignedClaims)
+    {
+        _processing = true;
+        try
+        {
+            var role = await RoleManager.FindByIdAsync(roleId) ?? throw new NotFoundException($"Application role {roleId} Not Found.");
+
+            foreach (var claim in assignedClaims)
+            {
+                await RoleManager.AddClaimAsync(role, claim);
+            }
+
+            foreach (var claim in unassignedClaims)
+            {
+                await RoleManager.RemoveClaimAsync(role, claim);
+            }
+
+            FusionCache.Remove($"get-claims-by-{roleId}");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+
+    private async Task ProcessPermissionChange(PermissionModel model, Func<string, Claim, bool, Task> changeAction)
+    {
+        _processing = true;
+        try
+        {
+            var roleId = model.RoleId!;
+            var claim = new Claim(model.ClaimType, model.ClaimValue);
+            model.Assigned = !model.Assigned;
+            var assigned = model.Assigned;
+            await changeAction(roleId, claim, assigned);
+
+
+
+            FusionCache.Remove($"get-claims-by-{roleId}");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception here.
+            throw ex;
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+    private async Task OnDelete(ApplicationRoleDto dto)
+    {
+        await DialogServiceHelper.ShowConfirmationDialogAsync(ConstantString.DeleteConfirmationTitle, string.Format(ConstantString.DeleteConfirmation, dto.Name), async () =>
+        {
+            await InvokeAsync(async () =>
+            {
+                var deleteRoles = await RoleManager.Roles.Where(x => x.Id == dto.Id).ToListAsync();
+                foreach (var role in deleteRoles)
+                {
+                    var deleteResult = await RoleManager.DeleteAsync(role);
+                    if (!deleteResult.Succeeded)
+                    {
+                        Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+                        return;
+                    }
+                }
+
+                Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
+                await OnRefresh();
+            });
+        });
+    }
+
+    private async Task OnDeleteChecked()
+    {
+        await DialogServiceHelper.ShowConfirmationDialogAsync(ConstantString.DeleteConfirmationTitle, string.Format(ConstantString.DeleteConfirmation, $"{_selectedItems.Count}"), async () =>
+        {
+            await InvokeAsync(async () =>
+            {
+                var deleteId = _selectedItems.Select(x => x.Id).ToArray();
+                var deleteRoles = await RoleManager.Roles.Where(x => deleteId.Contains(x.Id)).ToListAsync();
+                foreach (var role in deleteRoles)
+                {
+                    var deleteResult = await RoleManager.DeleteAsync(role);
+                    if (!deleteResult.Succeeded)
+                    {
+                        Snackbar.Add($"{string.Join(",", deleteResult.Errors.Select(x => x.Description).ToArray())}", Severity.Error);
+                        return;
+                    }
+                }
+                Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
+                await OnRefresh();
+            });
+        });
+    }
+
+
+    private Task OnExport()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task OnImportData(IBrowserFile file)
+    {
+        _uploading = true;
+        _uploading = false;
+        return Task.CompletedTask;
+    }
+
+}

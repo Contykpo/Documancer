@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Documancer.Migrators.PostgreSQL</AssemblyName>
+    <RootNamespace>Documancer.Migrators.PostgreSQL</RootNamespace>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Documancer.Infrastructure\Documancer.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
