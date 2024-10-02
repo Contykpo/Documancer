@@ -1,11 +1,7 @@
 ﻿using Application.Interfaces;
-using Domain.Entities;
+using Domain.Entities.Authentication;
+using Domain.Entities.Campaign;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Context
 {
@@ -14,6 +10,7 @@ namespace Infrastructure.Context
         #region Properties and Fields
 
         public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
 
         #endregion
 
