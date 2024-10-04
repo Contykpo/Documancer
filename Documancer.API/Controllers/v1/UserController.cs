@@ -13,13 +13,13 @@ namespace Documancer.API.Controllers.v1
     {
         #region Fields
 
-        private readonly IUser _user;
+        private readonly IUserRepository _user;
 
         #endregion
 
         #region Constructors
         
-        public UserController(IUser user)
+        public UserController(IUserRepository user)
         {
             _user = user;
         }

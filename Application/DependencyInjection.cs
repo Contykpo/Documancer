@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Application.Behaviors;
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application
 {
@@ -12,7 +9,14 @@ namespace Application
     {
         public static void AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                cfg.AddOpenBehavior(typeof(RequestResponseLoggingBehavior<,>));
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            });
+
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

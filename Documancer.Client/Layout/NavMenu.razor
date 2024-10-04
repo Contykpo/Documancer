@@ -1,0 +1,12 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavGroup Title="Campaigns" Expanded="true">
+                <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
+                <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">Weather</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
+    @* <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink> *@
+</MudNavMenu>

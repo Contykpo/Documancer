@@ -1,0 +1,13 @@
+﻿@page "/"
+
+@using System.Security.Claims
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <MudText>@context.User.Identity!.Name | [@context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value]</MudText>
+    </Authorized>
+</AuthorizeView>

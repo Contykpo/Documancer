@@ -1,0 +1,54 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudMenu Color="Color.Inherit" Style="align-self: auto;">
+                    <ActivatorContent>
+                        <MudAvatar Color="Color.Warning" Variant="Variant.Outlined">
+                            GM
+                            @* <MudImage Src="images/toiletvisit.jpg" /> *@
+                        </MudAvatar>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/logout">Log Out</MudMenuItem>
+                        <MudMenuItem Href="/about">About</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Secondary">Log In</MudButton>
+                <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" Color="Color.Inherit" Style="align-self: auto;">
+                    <MudMenuItem Href="/login">Log In / Sign Up</MudMenuItem>
+                    <MudMenuItem Href="/about">About</MudMenuItem>
+                </MudMenu>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+
+@code
+{
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

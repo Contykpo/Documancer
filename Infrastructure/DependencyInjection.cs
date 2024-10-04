@@ -39,7 +39,7 @@ namespace Infrastructure
                 };
             });
 
-            services.AddScoped<IUser, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }

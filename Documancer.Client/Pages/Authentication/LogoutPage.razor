@@ -1,0 +1,14 @@
+﻿@page "/logout"
+
+@using Documancer.Client.States
+
+@code
+{
+    protected async override Task OnInitializedAsync()
+    {
+        var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
+        await customAuthenticationStateProvider.UpdateAuthenticationState(null!);
+
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

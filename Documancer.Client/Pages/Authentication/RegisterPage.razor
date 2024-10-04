@@ -1,0 +1,122 @@
+﻿@page "/register"
+
+@using Application.Features.AuthenticationFeatures.DataTransferObjects
+@using Documancer.Client.States
+
+@inject ISnackbar Snackbar
+
+<MudCard>
+    <MudForm Model="@registerUserDTO" @ref="@form" Validation="@(registerValidator.ValidateValue)" ValidationDelay="0">
+        <MudCardContent>
+            <MudTextField @bind-Value="registerUserDTO.Name"
+                          For="@(() => registerUserDTO.Name)"
+                          Required="true"
+                          Label="Name" />
+
+            <MudTextField @bind-Value="registerUserDTO.EmailAddress"
+                          For="@(() => registerUserDTO.EmailAddress)"
+                          Required="true"
+                          Label="Email" />
+
+            <MudTextField @bind-Value="registerUserDTO.Password"
+                          For="@(() => registerUserDTO.Password)"
+                          InputType="InputType.Password"
+                          Required="true"
+                          Label="Password" />
+
+            <MudTextField @bind-Value="registerUserDTO.ConfirmPassword"
+                          For="@(() => registerUserDTO.ConfirmPassword)"
+                          InputType="InputType.Password"
+                          Required="true"
+                          Label="Confirm Password" />
+        </MudCardContent>
+    </MudForm>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await RegisterAsync())">Register</MudButton>
+    </MudCardActions>
+</MudCard>
+
+
+@code
+{
+    #region Properties and Fields
+
+    string Message { get; set; } = string.Empty;
+
+    MudForm form;
+
+    RegisterUserDTO registerUserDTO = new();
+
+    RegisterValidator registerValidator = new RegisterValidator();
+
+    #endregion
+
+    private async Task RegisterAsync()
+    {
+        try
+        {
+            await form.Validate();
+
+            var result = await UserAccountService.RegisterUserAccountAsync(registerUserDTO);
+
+            if (!result.Flag && form.IsValid)
+            {
+                NavigationManager.NavigateTo("/login", forceLoad: true);
+            }
+            {
+                Message = result.Message;
+            }
+
+            Snackbar.Add(Message);
+        }
+        catch
+        {
+            return;
+        }
+    }
+
+    /// <summary>
+    /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API.
+    /// </summary>
+    /// <typeparam name="RegisterUserDTO"></typeparam>
+    public class RegisterValidator : AbstractValidator<RegisterUserDTO>
+    {
+        public RegisterValidator()
+        {
+            RuleFor(r => r.Name)
+                .NotEmpty()
+                .Length(1, 50);
+            RuleFor(r => r.EmailAddress)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .EmailAddress()
+                .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
+            RuleFor(r => r.Password)
+                .NotEmpty().WithMessage("Your password cannot be empty")
+                .MinimumLength(8).WithMessage("Your password length must be at least 8.")
+                .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
+                .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.")
+                .Matches(@"[0-9]+").WithMessage("Your password must contain at least one number.")
+                .Matches(@"[\#\?\!\@\$\%\^\&\*\-\.]+").WithMessage("Your password must contain at least one special character: #?!@$ %^&*-.");
+            RuleFor(r => r.ConfirmPassword)
+                .Equal(r => r.Password);
+        }
+
+        private async Task<bool> IsUniqueAsync(string email)
+        {
+            // Simulates a long running http call.
+            await Task.Delay(2000);
+
+            return email.ToLower() != "test@test.com";
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<RegisterUserDTO>.CreateWithOptions((RegisterUserDTO)model, x => x.IncludeProperties(propertyName)));
+
+            if (result.IsValid) return Array.Empty<string>();
+
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+}

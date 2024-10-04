@@ -1,6 +1,8 @@
 using Application;
 using Asp.Versioning;
+using Documancer.API.Exceptions.GlobalExceptions;
 using Infrastructure;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +63,9 @@ builder.Services.AddApiVersioning(options =>
     });
 #endregion
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -68,7 +73,16 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(policy =>
+    {
+        policy.WithOrigins("https://localhost:7087")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithHeaders(HeaderNames.ContentType);
+    });
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

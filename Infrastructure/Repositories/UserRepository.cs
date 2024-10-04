@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository(IApplicationDbContext context, IConfiguration configuration) : IUser
+    public class UserRepository(IApplicationDbContext context, IConfiguration configuration) : IUserRepository
     {
         // Interface implementation methods:
 

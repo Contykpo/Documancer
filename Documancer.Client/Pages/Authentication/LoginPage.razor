@@ -1,0 +1,109 @@
+﻿@page "/login"
+
+@using Application.Features.AuthenticationFeatures.DataTransferObjects
+@using Documancer.Client.States
+
+@inject ISnackbar Snackbar
+
+<MudCard>
+    <MudForm Model="@loginUserDTO" @ref="@form" Validation="@(loginValidator.ValidateValue)" ValidationDelay="0">
+        <MudCardContent>
+            <MudTextField @bind-Value="loginUserDTO.EmailAddress"
+                          For="@(() => loginUserDTO.EmailAddress)"
+                          Required="true"
+                          Label="Email" />
+
+            <MudTextField @bind-Value="loginUserDTO.Password"
+                          For="@(() => loginUserDTO.Password)"
+                          InputType="InputType.Password"
+                          Required="true"
+                          Label="Password" />
+        </MudCardContent>
+    </MudForm>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await LoginAsync())">Log In</MudButton>
+    </MudCardActions>
+</MudCard>
+
+
+@code
+{
+    #region Properties and Fields
+
+    string Message { get; set; } = string.Empty;
+
+    MudForm form;
+
+    LoginUserDTO loginUserDTO = new();
+
+    LoginValidator loginValidator = new LoginValidator();
+
+    #endregion
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            await form.Validate();
+
+            var result = await UserAccountService.LogInUserAccountAsync(loginUserDTO);
+
+            if (form.IsValid && result.Flag)
+            {
+                var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
+                await customAuthenticationStateProvider.UpdateAuthenticationState(result.Token);
+
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+            {
+                Message = result.Message;
+            }
+
+            Snackbar.Add($"{Message} + {loginUserDTO.EmailAddress} + {loginUserDTO.Password}");
+        }
+        catch
+        {
+            return;
+        }
+    }
+
+    /// <summary>
+    /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API.
+    /// </summary>
+    /// <typeparam name="OrderModel"></typeparam>
+    public class LoginValidator : AbstractValidator<LoginUserDTO>
+    {
+        public LoginValidator()
+        {   
+            RuleFor(l => l.EmailAddress)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .EmailAddress()
+                .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
+            RuleFor(l => l.Password)
+                .NotEmpty().WithMessage("Your password cannot be empty")
+                .MinimumLength(8).WithMessage("Your password length must be at least 8.")
+                .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
+                .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.")
+                .Matches(@"[0-9]+").WithMessage("Your password must contain at least one number.")
+                .Matches(@"[\#\?\!\@\$\%\^\&\*\-\.]+").WithMessage("Your password must contain at least one special character: #?!@$ %^&*-.");
+        }
+
+        private async Task<bool> IsUniqueAsync(string email)
+        {
+            // Simulates a long running http call.
+            await Task.Delay(2000);
+
+            return email.ToLower() != "test@test.com";
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<LoginUserDTO>.CreateWithOptions((LoginUserDTO)model, x => x.IncludeProperties(propertyName)));
+            
+            if (result.IsValid) return Array.Empty<string>();
+            
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+}
