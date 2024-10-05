@@ -5,36 +5,54 @@
 
 @inject ISnackbar Snackbar
 
-<MudCard>
-    <MudForm Model="@registerUserDTO" @ref="@form" Validation="@(registerValidator.ValidateValue)" ValidationDelay="0">
-        <MudCardContent>
-            <MudTextField @bind-Value="registerUserDTO.Name"
-                          For="@(() => registerUserDTO.Name)"
-                          Required="true"
-                          Label="Name" />
 
-            <MudTextField @bind-Value="registerUserDTO.EmailAddress"
-                          For="@(() => registerUserDTO.EmailAddress)"
-                          Required="true"
-                          Label="Email" />
+<MudContainer Class="mt-16">
+    <MudGrid Class="mt-16" Justify="Justify.Center">
+        <MudItem xs="12" sm="12" md="4">
+            <MudCard Elevation="25" Class="rounded-lg pb-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Align="Align.Center">Log In</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudForm Model="@registerUserDTO" @ref="@form" Validation="@(registerValidator.ValidateValue)" ValidationDelay="0">
+                        <MudCardContent>
+                            <MudTextField @bind-Value="registerUserDTO.Name"
+                                          For="@(() => registerUserDTO.Name)"
+                                          Required="true"
+                                          Label="Name" />
 
-            <MudTextField @bind-Value="registerUserDTO.Password"
-                          For="@(() => registerUserDTO.Password)"
-                          InputType="InputType.Password"
-                          Required="true"
-                          Label="Password" />
+                            <MudTextField @bind-Value="registerUserDTO.EmailAddress"
+                                          For="@(() => registerUserDTO.EmailAddress)"
+                                          Required="true"
+                                          Label="Email" />
 
-            <MudTextField @bind-Value="registerUserDTO.ConfirmPassword"
-                          For="@(() => registerUserDTO.ConfirmPassword)"
-                          InputType="InputType.Password"
-                          Required="true"
-                          Label="Confirm Password" />
-        </MudCardContent>
-    </MudForm>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await RegisterAsync())">Register</MudButton>
-    </MudCardActions>
-</MudCard>
+                            <MudTextField @bind-Value="registerUserDTO.Password"
+                                          For="@(() => registerUserDTO.Password)"
+                                          InputType="InputType.Password"
+                                          Required="true"
+                                          Label="Password" />
+
+                            <MudTextField @bind-Value="registerUserDTO.ConfirmPassword"
+                                          For="@(() => registerUserDTO.ConfirmPassword)"
+                                          InputType="InputType.Password"
+                                          Required="true"
+                                          Label="Confirm Password" />
+                        </MudCardContent>
+                    </MudForm>
+                </MudCardContent>
+                <MudCardActions Class="d-flex justify-center">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" OnClick="@(async () => await RegisterAsync())">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+    <MudText Align="Align.Center" Class="mt-4">
+        Already have an account?
+        <MudLink Href="/login" Align="Align.Center">Log In.</MudLink>
+    </MudText>
+</MudContainer>
 
 
 @code

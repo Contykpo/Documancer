@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.API", "Documance
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{BB209513-ED0E-4817-9323-012CBBB982D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documancer.Client", "Documancer.Client\Documancer.Client.csproj", "{B4946BFD-F17E-4493-8313-C2DE7B91850F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documancer.Client", "Documancer.Client\Documancer.Client.csproj", "{B4946BFD-F17E-4493-8313-C2DE7B91850F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

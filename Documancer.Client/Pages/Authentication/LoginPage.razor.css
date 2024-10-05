@@ -1,0 +1,15 @@
+﻿.responsive-panel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Take full vertical height */
+}
+
+@media (max-width: 768px) {
+    .responsive-panel {
+        width: 80vw; /* Adjust size for mobile */
+        height: 80vw;
+        max-width: none;
+        max-height: none;
+    }
+}

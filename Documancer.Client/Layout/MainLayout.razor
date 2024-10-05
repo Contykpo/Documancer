@@ -12,7 +12,10 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudMenu Color="Color.Inherit" Style="align-self: auto;">
+
+                <MudMenu @ref="authorizedMenuRef" FullWidth="false" Color="Color.Inherit" ActivationEvent="@MouseEvent.LeftClick"
+                         AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomLeft"
+                         DisableAutoClose="false">
                     <ActivatorContent>
                         <MudAvatar Color="Color.Warning" Variant="Variant.Outlined">
                             GM
@@ -20,17 +23,37 @@
                         </MudAvatar>
                     </ActivatorContent>
                     <ChildContent>
-                        <MudMenuItem Href="/logout">Log Out</MudMenuItem>
-                        <MudMenuItem Href="/about">About</MudMenuItem>
+                        <MudPaper Width="240px" Class="mud-shadow-4" Style="padding: 4px;">
+                            <MudList T="string">
+                                <MudListItem Href="/logout" Text="Log Out" Icon="@Icons.Material.Filled.Logout" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Href="/about" Text="About" Icon="@Icons.Material.Filled.Info" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                                <MudDivider />
+                                <MudListItem Text="Settings" SecondaryText="Your Documancer account settings." OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                            </MudList>
+                        </MudPaper>
                     </ChildContent>
                 </MudMenu>
+
             </Authorized>
             <NotAuthorized>
-                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Secondary">Log In</MudButton>
-                <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" Color="Color.Inherit" Style="align-self: auto;">
-                    <MudMenuItem Href="/login">Log In / Sign Up</MudMenuItem>
-                    <MudMenuItem Href="/about">About</MudMenuItem>
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Secondary" Style="margin-right: 16px;">Log In</MudButton>
+
+                <MudMenu @ref="unauthorizedMenuRef" FullWidth="false" Color="Color.Inherit" ActivationEvent="@MouseEvent.LeftClick"
+                         AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomLeft"
+                         DisableAutoClose="false">
+                    <ActivatorContent>
+                        <MudIconButton Icon="@Icons.Material.Filled.MoreHoriz" />
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudPaper Width="240px" Class="mud-shadow-4" Style="padding: 4px;">
+                            <MudList T="string">
+                                <MudListItem Href="/login" Text="Log In / Sign Up" Icon="@Icons.Material.Filled.Login" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Href="/about" Text="About" Icon="@Icons.Material.Filled.Info" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
+                            </MudList>
+                        </MudPaper>
+                    </ChildContent>
                 </MudMenu>
+
             </NotAuthorized>
         </AuthorizeView>
     </MudAppBar>
@@ -45,6 +68,9 @@
 
 @code
 {
+    private MudMenu authorizedMenuRef;
+    private MudMenu unauthorizedMenuRef;
+
     bool _drawerOpen = true;
 
     void DrawerToggle()

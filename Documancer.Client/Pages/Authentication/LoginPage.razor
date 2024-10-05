@@ -5,25 +5,43 @@
 
 @inject ISnackbar Snackbar
 
-<MudCard>
-    <MudForm Model="@loginUserDTO" @ref="@form" Validation="@(loginValidator.ValidateValue)" ValidationDelay="0">
-        <MudCardContent>
-            <MudTextField @bind-Value="loginUserDTO.EmailAddress"
-                          For="@(() => loginUserDTO.EmailAddress)"
-                          Required="true"
-                          Label="Email" />
 
-            <MudTextField @bind-Value="loginUserDTO.Password"
-                          For="@(() => loginUserDTO.Password)"
-                          InputType="InputType.Password"
-                          Required="true"
-                          Label="Password" />
-        </MudCardContent>
-    </MudForm>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await LoginAsync())">Log In</MudButton>
-    </MudCardActions>
-</MudCard>
+<MudContainer Class="mt-16">
+    <MudGrid Class="mt-16" Justify="Justify.Center">
+        <MudItem xs="12" sm="12" md="4">
+            <MudCard Elevation="25" Class="rounded-lg pb-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Align="Align.Center">Log In</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudForm Model="@loginUserDTO" @ref="@form" Validation="@(loginValidator.ValidateValue)" ValidationDelay="0">
+                        <MudCardContent>
+                            <MudTextField @bind-Value="loginUserDTO.EmailAddress"
+                                          For="@(() => loginUserDTO.EmailAddress)"
+                                          Required="true"
+                                          Label="Email" />
+
+                            <MudTextField @bind-Value="loginUserDTO.Password"
+                                          For="@(() => loginUserDTO.Password)"
+                                          InputType="InputType.Password"
+                                          Required="true"
+                                          Label="Password" />
+                        </MudCardContent>
+                    </MudForm>
+                </MudCardContent>
+                <MudCardActions Class="d-flex justify-center">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" OnClick="@(async () => await LoginAsync())">Log In</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+    <MudText Align="Align.Center" Class="mt-4">
+        Don't have an account?
+        <MudLink Href="/register" Align="Align.Center">Sign Up.</MudLink>
+    </MudText> 
+</MudContainer>
 
 
 @code
