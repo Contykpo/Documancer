@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using System.Globalization;
+
+@inject IStringLocalizer<LayoutResource> Localizer
+
+<MudButtonGroup Color="Color.Transparent" Style="margin-right: 16px;">
+    @if (cultures is null)
+    {
+        <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Warning"></MudIcon>
+    }
+    else
+    {
+        <MudImage Src="@_selectedCulture!.CultureIconSource" Width="40" Alt="@_selectedCulture.CultureDescription" Class="rounded-lg ma-4" />
+        <MudMenu @ref="selectorMenuRef" FullWidth="false" Color="Color.Inherit" ActivationEvent="@MouseEvent.LeftClick"
+                 AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomRight"
+                 DisableAutoClose="false">
+            <ActivatorContent>
+                <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Color="Color.Inherit"></MudIcon>
+            </ActivatorContent>
+            <ChildContent>
+                <MudPaper Width="150px" Class="mud-shadow-4" Style="padding: 4px; margin-top: 4px;">
+                    @foreach (var culture in cultures)
+                    {
+                        <MudList T="string">
+                            <MudListItem Text="@Localizer[$"{_selectedCulture.CultureDescription}"]" OnClick="@(() => ChangeCulture(culture))" />
+                        </MudList>
+                    }
+                </MudPaper>
+            </ChildContent>
+        </MudMenu>
+    }
+</MudButtonGroup>
+
+
+@code
+{
+    private List<Culture>? cultures;
+    private Culture? _selectedCulture;
+
+    private MudMenu selectorMenuRef;
+
+    private void ChangeCulture(Culture culture)
+    {
+        CultureInfo cultureInfo = new CultureInfo(culture.CultureName);
+
+        if (CultureInfo.CurrentCulture != cultureInfo)
+        {
+            var js = (IJSInProcessRuntime)JSRuntime;
+
+            js.InvokeVoid("blazorCulture.set", cultureInfo.Name);
+
+            _selectedCulture = culture;
+
+            selectorMenuRef.CloseMenuAsync();
+            NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string fileName = "wwwroot/data/cultures.json";
+        string jsonString = File.ReadAllText(fileName);
+        
+        cultures = JsonSerializer.Deserialize<List<Culture>>(jsonString)!;
+
+        if (cultures is not null)
+        {
+            _selectedCulture = cultures.FirstOrDefault();
+        }
+    }
+}

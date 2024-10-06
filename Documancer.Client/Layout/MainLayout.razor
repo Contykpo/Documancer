@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+@inject IStringLocalizer<LayoutResource> Localizer
+
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="documancerCustomTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,6 +12,9 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
+        
+        <CultureSelector />
+        
         <AuthorizeView>
             <Authorized>
 
@@ -23,12 +28,16 @@
                         </MudAvatar>
                     </ActivatorContent>
                     <ChildContent>
-                        <MudPaper Width="240px" Class="mud-shadow-4" Style="padding: 4px;">
+                        <MudPaper Width="250px" Class="mud-shadow-4" Style="padding: 4px;">
                             <MudList T="string">
-                                <MudListItem Href="/logout" Text="Log Out" Icon="@Icons.Material.Filled.Logout" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
-                                <MudListItem Href="/about" Text="About" Icon="@Icons.Material.Filled.Info" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Icon="@Icons.Material.Filled.ModeNight">
+                                    <MudSwitch @bind-Value="_isDarkMode" Label="@(_isDarkMode ? Localizer["Dark Mode"] : Localizer["Light Mode"])" LabelPosition="LabelPosition.Start" Color="Color.Info" UncheckedColor="Color.Warning" />
+                                </MudListItem>
+                                <MudListItem Href="/logout" Text="@Localizer["Log Out"]" Icon="@Icons.Material.Filled.Logout" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
                                 <MudDivider />
-                                <MudListItem Text="Settings" SecondaryText="Your Documancer account settings." OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Href="/about" Text="@Localizer["About"]" Icon="@Icons.Material.Filled.Info" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
+                                <MudDivider />
+                                <MudListItem Text="@Localizer["Settings"]" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
                             </MudList>
                         </MudPaper>
                     </ChildContent>
@@ -36,7 +45,7 @@
 
             </Authorized>
             <NotAuthorized>
-                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Secondary" Style="margin-right: 16px;">Log In</MudButton>
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Inherit" Style="margin-right: 16px;">@Localizer["Log In"]</MudButton>
 
                 <MudMenu @ref="unauthorizedMenuRef" FullWidth="false" Color="Color.Inherit" ActivationEvent="@MouseEvent.LeftClick"
                          AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomLeft"
@@ -47,8 +56,8 @@
                     <ChildContent>
                         <MudPaper Width="240px" Class="mud-shadow-4" Style="padding: 4px;">
                             <MudList T="string">
-                                <MudListItem Href="/login" Text="Log In / Sign Up" Icon="@Icons.Material.Filled.Login" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
-                                <MudListItem Href="/about" Text="About" Icon="@Icons.Material.Filled.Info" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Href="/login" Text="@Localizer["Log In / Sign Up"]" Icon="@Icons.Material.Filled.Login" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
+                                <MudListItem Href="/about" Text="@Localizer["About"]" Icon="@Icons.Material.Filled.Info" OnClick="@(() => unauthorizedMenuRef.CloseMenuAsync())" />
                             </MudList>
                         </MudPaper>
                     </ChildContent>
@@ -71,7 +80,28 @@
     private MudMenu authorizedMenuRef;
     private MudMenu unauthorizedMenuRef;
 
-    bool _drawerOpen = true;
+    MudTheme documancerCustomTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = Colors.Blue.Default,
+            Secondary = Colors.Green.Accent4,
+            AppbarBackground = Colors.Red.Default,
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.Blue.Lighten1
+        },
+
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
+    };
+
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = true;
 
     void DrawerToggle()
     {

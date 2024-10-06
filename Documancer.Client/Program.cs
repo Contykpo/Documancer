@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.Authorization;
 using Documancer.Client.States;
+using Documancer.Client.Extensions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -23,9 +24,13 @@ builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddMudServices();
+builder.Services.AddLocalization();
 
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+await host.SetDefaultCulture();
+await host.RunAsync();
