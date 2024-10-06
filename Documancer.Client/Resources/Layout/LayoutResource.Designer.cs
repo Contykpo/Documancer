@@ -160,7 +160,7 @@ namespace Documancer.Client.Resources.Layout {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Spanich.
+        ///   Looks up a localized string similar to Spanish.
         /// </summary>
         internal static string Spanish {
             get {

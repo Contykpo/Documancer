@@ -10,7 +10,7 @@
     }
     else
     {
-        <MudImage Src="@_selectedCulture!.CultureIconSource" Width="40" Alt="@_selectedCulture.CultureDescription" Class="rounded-lg ma-4" />
+        <MudImage src="@_selectedCulture!.CultureIconSource" Width="40" Class="rounded-lg ma-4" />
         <MudMenu @ref="selectorMenuRef" FullWidth="false" Color="Color.Inherit" ActivationEvent="@MouseEvent.LeftClick"
                  AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomRight"
                  DisableAutoClose="false">
@@ -22,7 +22,7 @@
                     @foreach (var culture in cultures)
                     {
                         <MudList T="string">
-                            <MudListItem Text="@Localizer[$"{_selectedCulture.CultureDescription}"]" OnClick="@(() => ChangeCulture(culture))" />
+                            <MudListItem Text="@Localizer[$"{culture.CultureDescription}"]" OnClick="@(() => ChangeCulture(culture))" />
                         </MudList>
                     }
                 </MudPaper>
@@ -39,6 +39,7 @@
 
     private MudMenu selectorMenuRef;
 
+
     private void ChangeCulture(Culture culture)
     {
         CultureInfo cultureInfo = new CultureInfo(culture.CultureName);
@@ -49,8 +50,6 @@
 
             js.InvokeVoid("blazorCulture.set", cultureInfo.Name);
 
-            _selectedCulture = culture;
-
             selectorMenuRef.CloseMenuAsync();
             NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         }
@@ -58,14 +57,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string fileName = "wwwroot/data/cultures.json";
-        string jsonString = File.ReadAllText(fileName);
-        
-        cultures = JsonSerializer.Deserialize<List<Culture>>(jsonString)!;
+        cultures = new List<Culture>()
+        {
+            new Culture()
+            {
+                CultureName = "en-US",
+                CultureIconSource = "images/cultures/en-US.svg",
+                CultureDescription = "English"
+            },
+            new Culture()
+            {
+                CultureName = "es-AR",
+                CultureIconSource = "images/cultures/es-ARG.svg",
+                CultureDescription = "Spanish"
+            },
+        };
 
         if (cultures is not null)
         {
-            _selectedCulture = cultures.FirstOrDefault();
+            _selectedCulture = cultures.FirstOrDefault(c => c.CultureName == CultureInfo.CurrentCulture.Name);
         }
     }
 }
