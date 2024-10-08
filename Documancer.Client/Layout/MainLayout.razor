@@ -22,7 +22,7 @@
                          AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomLeft"
                          DisableAutoClose="false">
                     <ActivatorContent>
-                        <MudAvatar Color="Color.Warning" Variant="Variant.Outlined">
+                        <MudAvatar Color="Color.Warning" Variant="Variant.Outlined" >
                             GM
                             @* <MudImage Src="images/toiletvisit.jpg" /> *@
                         </MudAvatar>
@@ -30,6 +30,7 @@
                     <ChildContent>
                         <MudPaper Width="250px" Class="mud-shadow-4" Style="padding: 4px;">
                             <MudList T="string">
+                                <MudListItem Href="/profile" Text="@Localizer["Profile"]" Icon="@Icons.Material.Filled.AccountCircle" OnClick="@(() => authorizedMenuRef.CloseMenuAsync())" />
                                 <MudListItem Icon="@Icons.Material.Filled.ModeNight">
                                     <MudSwitch @bind-Value="_isDarkMode" Label="@(_isDarkMode ? Localizer["Dark Mode"] : Localizer["Light Mode"])" LabelPosition="LabelPosition.Start" Color="Color.Info" UncheckedColor="Color.Warning" />
                                 </MudListItem>

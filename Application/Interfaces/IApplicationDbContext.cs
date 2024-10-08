@@ -1,5 +1,5 @@
 ﻿using Domain.Entities.Authentication;
-using Domain.Entities.Campaign;
+using Domain.Entities.Campaigns;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Interfaces

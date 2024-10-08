@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Documancer.Client.Resources.Layout {
+namespace Documancer.Client.Resources.Profile {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Documancer.Client.Resources.Layout {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LayoutResource {
+    internal class ProfileResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LayoutResource() {
+        internal ProfileResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Documancer.Client.Resources.Layout {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Documancer.Client.Resources.Layout.LayoutResource", typeof(LayoutResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Documancer.Client.Resources.Profile.ProfileResource", typeof(ProfileResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,16 +61,7 @@ namespace Documancer.Client.Resources.Layout {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to About.
-        /// </summary>
-        internal static string About {
-            get {
-                return ResourceManager.GetString("About", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Campaigns.
+        ///   Looks up a localized string similar to Campagins.
         /// </summary>
         internal static string Campaigns {
             get {
@@ -79,65 +70,39 @@ namespace Documancer.Client.Resources.Layout {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dark Mode.
+        ///   Looks up a localized string similar to Create a campaign to log your story events..
         /// </summary>
-        internal static string Dark_Mode {
+        internal static string Create_a_campaign_to_log_your_story_events_ {
             get {
-                return ResourceManager.GetString("Dark Mode", resourceCulture);
+                return ResourceManager.GetString("Create a campaign to log your story events.", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit Profile.
+        ///   Looks up a localized string similar to CREATE A NEW CAMPAIGN.
         /// </summary>
-        internal static string Edit_Profile {
+        internal static string CREATE_A_NEW_CAMPAIGN {
             get {
-                return ResourceManager.GetString("Edit Profile", resourceCulture);
+                return ResourceManager.GetString("CREATE A NEW CAMPAIGN", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to English.
+        ///   Looks up a localized string similar to Extend the functionality of Documancer with great first and third-party extensions..
         /// </summary>
-        internal static string English {
+        internal static string Extend_the_functionality_of_Documancer_with_great_first_and_third_party_extensions_ {
             get {
-                return ResourceManager.GetString("English", resourceCulture);
+                return ResourceManager.GetString("Extend the functionality of Documancer with great first and third-party extension" +
+                        "s.", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Home.
+        ///   Looks up a localized string similar to Extensions.
         /// </summary>
-        internal static string Home {
+        internal static string Extensions {
             get {
-                return ResourceManager.GetString("Home", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Light Mode.
-        /// </summary>
-        internal static string Light_Mode {
-            get {
-                return ResourceManager.GetString("Light Mode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log In.
-        /// </summary>
-        internal static string Log_In {
-            get {
-                return ResourceManager.GetString("Log In", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Log In / Sign Up.
-        /// </summary>
-        internal static string Log_In___Sign_Up {
-            get {
-                return ResourceManager.GetString("Log In / Sign Up", resourceCulture);
+                return ResourceManager.GetString("Extensions", resourceCulture);
             }
         }
         
@@ -151,29 +116,20 @@ namespace Documancer.Client.Resources.Layout {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Profile.
+        ///   Looks up a localized string similar to Manage.
         /// </summary>
-        internal static string Profile {
+        internal static string Manage {
             get {
-                return ResourceManager.GetString("Profile", resourceCulture);
+                return ResourceManager.GetString("Manage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Settings.
+        ///   Looks up a localized string similar to Ongoing campaigns: .
         /// </summary>
-        internal static string Settings {
+        internal static string Ongoing_campaigns__ {
             get {
-                return ResourceManager.GetString("Settings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Spanish.
-        /// </summary>
-        internal static string Spanish {
-            get {
-                return ResourceManager.GetString("Spanish", resourceCulture);
+                return ResourceManager.GetString("Ongoing campaigns: ", resourceCulture);
             }
         }
     }

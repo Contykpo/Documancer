@@ -1,4 +1,6 @@
 ﻿using Domain.Common;
+using Domain.Entities.Campaigns;
+using System.Collections.Generic;
 
 namespace Domain.Entities.Authentication
 {
@@ -7,5 +9,10 @@ namespace Domain.Entities.Authentication
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+
+        /// <summary>
+        /// Active Campaigns managed by the User.
+        /// </summary>
+        public ICollection<Campaign> Campaigns { get; set; } = new List<Campaign>();
     }
 }

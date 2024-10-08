@@ -117,43 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
   <data name="Log In" xml:space="preserve">
-    <value>Log In</value>
+    <value>Iniciar Sesion</value>
   </data>
-  <data name="Log In / Sign Up" xml:space="preserve">
-    <value>Log In / Sign Up</value>
+  <data name="Name" xml:space="preserve">
+    <value>Nombre</value>
   </data>
-  <data name="About" xml:space="preserve">
-    <value>About</value>
+  <data name="Email" xml:space="preserve">
+    <value>Correo Electronico</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="Password" xml:space="preserve">
+    <value>Contraseña</value>
+  </data>
+  <data name="Confirm Password" xml:space="preserve">
+    <value>Confirmar Contraseña</value>
+  </data>
+  <data name="Don't have an account?" xml:space="preserve">
+    <value>Todavía no tenes una cuenta?</value>
+  </data>
+  <data name="Sign Up." xml:space="preserve">
+    <value>Crea tu Cuenta.</value>
+  </data>
+  <data name="Already have an account?" xml:space="preserve">
+    <value>Ya estas registrado?</value>
+  </data>
+  <data name="Log In." xml:space="preserve">
+    <value>Inicie Sesion.</value>
+  </data>
+  <data name="Your password cannot be empty." xml:space="preserve">
+    <value>La contraseña no puede estar vacía.</value>
+  </data>
+  <data name="Your password length must be at least 8 characters." xml:space="preserve">
+    <value>La contraseña debe tener al menos 8 caracteres.</value>
+  </data>
+  <data name="Your password must contain at least one uppercase letter." xml:space="preserve">
+    <value>La contraseña debe contener al menos una letra mayúscula.</value>
+  </data>
+  <data name="Your password must contain at least one lowercase letter." xml:space="preserve">
+    <value>La contraseña debe contener al menos una letra minúscula.</value>
+  </data>
+  <data name="Your password must contain at least one number." xml:space="preserve">
+    <value>La contraseña debe contener al menos un número.</value>
+  </data>
+  <data name="Your password must contain at least one special character: #?!@$ %^&amp;*-." xml:space="preserve">
+    <value>La contraseña debe contener al menos un carácter especial: #?!@$ %^&amp;*-.</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Crear Cuenta</value>
+  </data>
+  <data name="Register." xml:space="preserve">
+    <value>Crear</value>
+  </data>
+  <data name="Log" xml:space="preserve">
+    <value>Iniciar</value>
   </data>
   <data name="Log Out" xml:space="preserve">
-    <value>Log Out</value>
-  </data>
-  <data name="Dark Mode" xml:space="preserve">
-    <value>Dark Mode</value>
-  </data>
-  <data name="Light Mode" xml:space="preserve">
-    <value>Light Mode</value>
-  </data>
-  <data name="Edit Profile" xml:space="preserve">
-    <value>Edit Profile</value>
-  </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Spanish" xml:space="preserve">
-    <value>Spanish</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
-  </data>
-  <data name="Campaigns" xml:space="preserve">
-    <value>Campaigns</value>
+    <value>Cerrar Sesion</value>
   </data>
 </root>

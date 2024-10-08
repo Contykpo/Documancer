@@ -39,17 +39,35 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\Authentication\AuthenticationResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthenticationResource.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Layout\LayoutResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>LayoutResource.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Profile\ProfileResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProfileResource.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Authentication\AuthenticationResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Layout\LayoutResource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LayoutResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Profile\ProfileResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProfileResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

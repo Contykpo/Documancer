@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces;
-using Domain.Entities.Campaign;
+using Domain.Entities.Campaigns;
 using MediatR;
 
 namespace Application.Features.CampaignFeatures.Commands.Create

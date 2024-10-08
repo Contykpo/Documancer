@@ -117,43 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="Log In" xml:space="preserve">
-    <value>Log In</value>
-  </data>
-  <data name="Log In / Sign Up" xml:space="preserve">
-    <value>Log In / Sign Up</value>
-  </data>
-  <data name="About" xml:space="preserve">
-    <value>About</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
-  </data>
   <data name="Log Out" xml:space="preserve">
-    <value>Log Out</value>
-  </data>
-  <data name="Dark Mode" xml:space="preserve">
-    <value>Dark Mode</value>
-  </data>
-  <data name="Light Mode" xml:space="preserve">
-    <value>Light Mode</value>
-  </data>
-  <data name="Edit Profile" xml:space="preserve">
-    <value>Edit Profile</value>
-  </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Spanish" xml:space="preserve">
-    <value>Spanish</value>
-  </data>
-  <data name="Profile" xml:space="preserve">
-    <value>Profile</value>
+    <value>Cerrar Sesion</value>
   </data>
   <data name="Campaigns" xml:space="preserve">
-    <value>Campaigns</value>
+    <value>Campañas</value>
+  </data>
+  <data name="CREATE A NEW CAMPAIGN" xml:space="preserve">
+    <value>CREAR NUEVA CAMPAÑA</value>
+  </data>
+  <data name="Ongoing campaigns: " xml:space="preserve">
+    <value>Campañas en marcha: </value>
+  </data>
+  <data name="Create a campaign to log your story events." xml:space="preserve">
+    <value>Crea una campaña para registrar los eventos de tu historia.</value>
+  </data>
+  <data name="Extensions" xml:space="preserve">
+    <value>Extensiones</value>
+  </data>
+  <data name="Extend the functionality of Documancer with great first and third-party extensions." xml:space="preserve">
+    <value>Amplía la funcionalidad de Documancer con excelentes extensiones propias y de terceros.</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Gestionar</value>
   </data>
 </root>

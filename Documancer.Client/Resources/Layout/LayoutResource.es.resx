@@ -141,9 +141,6 @@
   <data name="Light Mode" xml:space="preserve">
     <value>Modo Claro</value>
   </data>
-  <data name="Campaigns" xml:space="preserve">
-    <value>Campañas</value>
-  </data>
   <data name="Edit Profile" xml:space="preserve">
     <value>Editar Perfil</value>
   </data>
@@ -152,5 +149,11 @@
   </data>
   <data name="Spanish" xml:space="preserve">
     <value>Español</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="Campaigns" xml:space="preserve">
+    <value>Campañas</value>
   </data>
 </root>

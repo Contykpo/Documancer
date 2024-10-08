@@ -1,7 +1,9 @@
 ﻿using Domain.Common;
+using Domain.Entities.Authentication;
+using Domain.Entities.Files;
 using System;
 
-namespace Domain.Entities.Campaign
+namespace Domain.Entities.Campaigns
 {
     public class Campaign : BaseEntity
     {
@@ -9,6 +11,16 @@ namespace Domain.Entities.Campaign
 
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Campaign banner to be shown on Card.
+        /// </summary>
+        public virtual Image? BannerImage { get; set; } 
+
+        /// <summary>
+        /// Owner of this Campaign.
+        /// </summary>
+        public virtual ApplicationUser OwnerUser { get; set; }
 
         #endregion
 

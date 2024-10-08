@@ -4,6 +4,7 @@
 @using Documancer.Client.States
 
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<AuthenticationResource> Localizer
 
 
 <MudContainer Class="mt-16">
@@ -12,7 +13,7 @@
             <MudCard Elevation="25" Class="rounded-lg pb-4">
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h5" Align="Align.Center">Log In</MudText>
+                        <MudText Typo="Typo.h5" Align="Align.Center">@Localizer["Register"]</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
@@ -21,36 +22,36 @@
                             <MudTextField @bind-Value="registerUserDTO.Name"
                                           For="@(() => registerUserDTO.Name)"
                                           Required="true"
-                                          Label="Name" />
+                                          Label="@Localizer["Name"]" />
 
                             <MudTextField @bind-Value="registerUserDTO.EmailAddress"
                                           For="@(() => registerUserDTO.EmailAddress)"
                                           Required="true"
-                                          Label="Email" />
+                                          Label="@Localizer["Email"]" />
 
                             <MudTextField @bind-Value="registerUserDTO.Password"
                                           For="@(() => registerUserDTO.Password)"
                                           InputType="InputType.Password"
                                           Required="true"
-                                          Label="Password" />
+                                          Label="@Localizer["Password"]" />
 
                             <MudTextField @bind-Value="registerUserDTO.ConfirmPassword"
                                           For="@(() => registerUserDTO.ConfirmPassword)"
                                           InputType="InputType.Password"
                                           Required="true"
-                                          Label="Confirm Password" />
+                                          Label="@Localizer["Confirm Password"]" />
                         </MudCardContent>
                     </MudForm>
                 </MudCardContent>
                 <MudCardActions Class="d-flex justify-center">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" OnClick="@(async () => await RegisterAsync())">Register</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" OnClick="@(async () => await RegisterAsync())">@Localizer["Register."]</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
     </MudGrid>
     <MudText Align="Align.Center" Class="mt-4">
-        Already have an account?
-        <MudLink Href="/login" Align="Align.Center">Log In.</MudLink>
+        @Localizer["Already have an account?"]
+        <MudLink Href="/login" Align="Align.Center">@Localizer["Log In."]</MudLink>
     </MudText>
 </MudContainer>
 
@@ -110,8 +111,8 @@
                 .EmailAddress()
                 .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
             RuleFor(r => r.Password)
-                .NotEmpty().WithMessage("Your password cannot be empty")
-                .MinimumLength(8).WithMessage("Your password length must be at least 8.")
+                .NotEmpty().WithMessage("Your password cannot be empty.")
+                .MinimumLength(8).WithMessage("Your password length must be at least 8 characters.")
                 .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
                 .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.")
                 .Matches(@"[0-9]+").WithMessage("Your password must contain at least one number.")
