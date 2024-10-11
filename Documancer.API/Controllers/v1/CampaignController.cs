@@ -5,6 +5,8 @@ using Application.Features.CampaignFeatures.Queries.Get;
 using Application.Features.CampaignFeatures.Queries.List;
 using Application.Features.FilesFeatures.Commands;
 using Asp.Versioning;
+using Documancer.API.Features.Campaigns.Requests;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documancer.API.Controllers.v1
@@ -17,37 +19,36 @@ namespace Documancer.API.Controllers.v1
         /// <summary>
         /// Creates a New Campaign with an optional image upload.
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="file"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCampaignCommand command, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateCampaignRequest request)
         {
-            if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+            byte[]? imageData = null;
+            string? fileName = null;
+            string? contentType = null;
 
-            using var ms = new MemoryStream();
+            if (request.BannerImageFile != null)
+            {
+                using var memoryStream = new MemoryStream();
+                await request.BannerImageFile.CopyToAsync(memoryStream);
+                imageData = memoryStream.ToArray();
+                fileName = request.BannerImageFile.FileName;
+                contentType = request.BannerImageFile.ContentType;
+            }
 
-            await file.CopyToAsync(ms);
+            var command = new CreateCampaignCommand(
+                request.Name,
+                request.Description,
+                fileName,
+                contentType,
+                imageData
+            );
 
-            var fileBytes = ms.ToArray();
-
-            var command = new UploadImageCommand(file.FileName, file.ContentType, fileBytes);
-
-            return Ok(await Mediator.Send(command));
+            var campaignId = await Mediator.Send(command);
+            return Ok(campaignId);
         }
 
-        /// <summary>
-        /// Uploads a New Image
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> UploadImage()
-        {
-
-
-            return Ok(await Mediator.Send(command));
-        }
 
         /// <summary>
         /// Gets all Campaign.

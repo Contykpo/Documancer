@@ -47,12 +47,14 @@ namespace Infrastructure.Context
             modelBuilder.Entity<Campaign>()
                 .HasOne(e => e.BannerImage)
                 .WithOne(e => e.OwnerCampaign)
+                .HasForeignKey<Image>(e => e.OwnerCampaignId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // --- Image Campaign
             modelBuilder.Entity<Image>()
                 .HasOne(e => e.OwnerCampaign)
                 .WithOne(e => e.BannerImage)
+                .HasForeignKey<Image>(e => e.OwnerCampaignId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

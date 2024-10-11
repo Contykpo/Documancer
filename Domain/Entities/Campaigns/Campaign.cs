@@ -35,6 +35,11 @@ namespace Domain.Entities.Campaigns
             Name = name;
             Description = description;
             BannerImage = bannerImage;
+
+            if (bannerImage != null)
+            {
+                bannerImage.OwnerCampaign = this;
+            }
         }
 
         #endregion

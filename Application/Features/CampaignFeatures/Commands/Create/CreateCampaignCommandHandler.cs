@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Domain.Entities.Campaigns;
+using Domain.Entities.Files;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.CampaignFeatures.Commands.Create
 {
@@ -8,16 +10,27 @@ namespace Application.Features.CampaignFeatures.Commands.Create
     {
         public async Task<Guid> Handle(CreateCampaignCommand command, CancellationToken cancellationToken)
         {
-            var campaign = new Campaign(command.Name, command.Description, command.BannerImage);
-            
-            if (command.BannerImage is not null)
+            Image? bannerImage = null;
+
+            if (command.Data != null &&
+                command.FileName != null &&
+                command.ContentType != null)
             {
-                await context.Images.AddAsync(campaign.BannerImage!);
+                bannerImage = new Image
+                {
+                    FileName = command.FileName,
+                    ContentType = command.ContentType,
+                    Data = command.Data
+                };
+
+                await context.Images.AddAsync(bannerImage, cancellationToken);
             }
 
-            await context.Campaigns.AddAsync(campaign);
+            var campaign = new Campaign(command.Name, command.Description, bannerImage);
+            await context.Campaigns.AddAsync(campaign, cancellationToken);
+
             await context.SaveChangesAsync();
-            
+
             return campaign.Id;
         }
     }
