@@ -7,11 +7,12 @@ namespace Application.Features.CampaignFeatures.Commands.Delete
     {
         public async Task<bool> Handle(DeleteCampaignByIdCommand request, CancellationToken cancellationToken)
         {
-            var product = await context.Campaigns.FindAsync(request.Id);
+            var campaign = await context.Campaigns.FindAsync(request.Id);
             
-            if (product == null) return false;
-            
-            context.Campaigns.Remove(product);
+            if (campaign == null) return false;
+
+            context.Images.Remove(campaign.BannerImage!);
+            context.Campaigns.Remove(campaign);
             
             await context.SaveChangesAsync();
 

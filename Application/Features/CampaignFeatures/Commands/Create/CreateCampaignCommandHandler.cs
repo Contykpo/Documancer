@@ -8,11 +8,17 @@ namespace Application.Features.CampaignFeatures.Commands.Create
     {
         public async Task<Guid> Handle(CreateCampaignCommand command, CancellationToken cancellationToken)
         {
-            var product = new Campaign(command.Name, command.Description);
-            await context.Campaigns.AddAsync(product);
+            var campaign = new Campaign(command.Name, command.Description, command.BannerImage);
+            
+            if (command.BannerImage is not null)
+            {
+                await context.Images.AddAsync(campaign.BannerImage!);
+            }
+
+            await context.Campaigns.AddAsync(campaign);
             await context.SaveChangesAsync();
             
-            return product.Id;
+            return campaign.Id;
         }
     }
 }

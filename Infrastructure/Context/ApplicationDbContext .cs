@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities.Authentication;
 using Domain.Entities.Campaigns;
+using Domain.Entities.Files;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 
@@ -12,6 +13,7 @@ namespace Infrastructure.Context
 
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         #endregion
 
@@ -29,11 +31,29 @@ namespace Infrastructure.Context
         {
             base.OnModelCreating(modelBuilder);
 
+            // --- ApplicationUser Campaign
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(e => e.Campaigns)
                 .WithOne(e => e.OwnerUser)
-                .HasForeignKey(e => e.OwnerUser.Id)
-                .HasPrincipalKey(e => e.Id);
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- Campaign ApplicationUser
+            modelBuilder.Entity<Campaign>()
+                .HasOne(e => e.OwnerUser)
+                .WithMany(e => e.Campaigns)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- Campaign Image
+            modelBuilder.Entity<Campaign>()
+                .HasOne(e => e.BannerImage)
+                .WithOne(e => e.OwnerCampaign)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- Image Campaign
+            modelBuilder.Entity<Image>()
+                .HasOne(e => e.OwnerCampaign)
+                .WithOne(e => e.BannerImage)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public async Task<int> SaveChangesAsync()

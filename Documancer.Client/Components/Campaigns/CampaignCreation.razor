@@ -1,0 +1,157 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+@inject ISnackbar Snackbar
+
+
+<MudContainer Class="mt-16">
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12" sm="8" md="6">
+            <MudCard Elevation="4" Class="pa-4">
+                <MudText Typo="Typo.h5" Align="Align.Center">Upload Image</MudText>
+                <EditForm Model="@imageUploadModel" OnValidSubmit="HandleValidSubmit">
+                    <MudStack Spacing="3">
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                            <ActivatorContent>
+                                <MudFab Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Image"
+                                        Label="Load picture" />
+                            </ActivatorContent>
+                        </MudFileUpload>
+
+                        @if (previewUrl != null)
+                        {
+                            <img src="@previewUrl" alt="Image Preview" style="max-width: 100%; height: auto;" />
+                        }
+                    </MudStack>
+                </EditForm>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code
+{
+    private IBrowserFile selectedFile;
+    private string previewUrl;
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+
+        // Optional: Preview the image
+        var resizedImage = await selectedFile.RequestImageFileAsync("image/png", 300, 300);
+        var buffer = new byte[resizedImage.Size];
+        await resizedImage.OpenReadStream().ReadAsync(buffer);
+        previewUrl = $"data:{resizedImage.ContentType};base64,{Convert.ToBase64String(buffer)}";
+
+        // Assign to the model
+        imageUploadModel.FileName = selectedFile.Name;
+        imageUploadModel.ContentType = selectedFile.ContentType;
+        imageUploadModel.Data = buffer;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (selectedFile == null)
+        {
+            Snackbar.Add("Please select a file.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var fileContent = new ByteArrayContent(imageUploadModel.Data);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageUploadModel.ContentType);
+            content.Add(fileContent, "file", imageUploadModel.FileName);
+
+            //var response = await Http.PostAsync("https://localhost:7103/api/Upload/UploadImage", content); // Replace with your API URL
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<UploadImageResponse>();
+                Snackbar.Add($"Image uploaded successfully! ID: {result.ImageId}", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Image upload failed: {response.ReasonPhrase}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            await form.Validate();
+
+            var result = await UserAccountService.LogInUserAccountAsync(loginUserDTO);
+
+            if (form.IsValid && result.Flag)
+            {
+                var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
+                await customAuthenticationStateProvider.UpdateAuthenticationState(result.Token);
+
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+            {
+                Message = result.Message;
+            }
+
+            Snackbar.Add($"{Message} + {loginUserDTO.EmailAddress} + {loginUserDTO.Password}");
+        }
+        catch
+        {
+            return;
+        }
+    }
+
+    /// <summary>
+    /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API.
+    /// </summary>
+    /// <typeparam name="OrderModel"></typeparam>
+    public class CreateCampaignValidator : AbstractValidator<ImageDTO>
+    {
+        public CreateCampaignValidator()
+        {
+            RuleFor(c => c.)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .EmailAddress()
+                .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
+            RuleFor(l => l.Password)
+                .NotEmpty().WithMessage("Your password cannot be empty.")
+                .MinimumLength(8).WithMessage("Your password length must be at least 8 characters.")
+                .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
+                .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.")
+                .Matches(@"[0-9]+").WithMessage("Your password must contain at least one number.")
+                .Matches(@"[\#\?\!\@\$\%\^\&\*\-\.]+").WithMessage("Your password must contain at least one special character: #?!@$ %^&*-.");
+        }
+
+        private async Task<bool> IsUniqueAsync(string email)
+        {
+            // Simulates a long running http call.
+            await Task.Delay(2000);
+
+            return email.ToLower() != "test@test.com";
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<LoginUserDTO>.CreateWithOptions((LoginUserDTO)model, x => x.IncludeProperties(propertyName)));
+
+            if (result.IsValid) return Array.Empty<string>();
+
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+}

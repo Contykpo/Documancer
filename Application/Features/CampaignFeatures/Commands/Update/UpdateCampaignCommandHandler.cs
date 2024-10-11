@@ -16,6 +16,11 @@ namespace Application.Features.CampaignFeatures.Commands.Update
 
             campaign.Name = command.Name;
             campaign.Description = command.Description;
+            
+            if (command.BannerImage is not null)
+            {
+                campaign.BannerImage = command.BannerImage;
+            }
 
             await context.SaveChangesAsync();
 

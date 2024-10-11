@@ -53,7 +53,7 @@
 
                 <!-- Create a New Campaign Button Row -->
                 <MudCardActions Class="mt-2 d-flex justify-center">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">@Localizer["CREATE A NEW CAMPAIGN"]</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="OpenCampaignCreationOverlay">@Localizer["CREATE A NEW CAMPAIGN"]</MudButton>
                 </MudCardActions>
             </MudPaper>
         </MudItem>
@@ -98,8 +98,19 @@
     </MudGrid>
 </MudContainer>
 
+<MudOverlay @bind-Visible="campaignCreationIsVisible" DarkBackground="true" ZIndex="9999" AutoClose="true">
+    <CampaignCreation />
+</MudOverlay>
+
 
 @code
 {
+    private bool campaignCreationIsVisible = false;
 
+    public void OpenCampaignCreationOverlay()
+    {
+        campaignCreationIsVisible = true;
+        
+        StateHasChanged();
+    }
 }

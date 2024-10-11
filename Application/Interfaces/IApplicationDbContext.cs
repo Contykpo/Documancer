@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Authentication;
 using Domain.Entities.Campaigns;
+using Domain.Entities.Files;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Interfaces
@@ -11,6 +12,7 @@ namespace Application.Interfaces
 
         DbSet<Campaign> Campaigns { get; set; }
         DbSet<ApplicationUser> Users { get; set; }
+        DbSet<Image> Images { get; set; }
 
         #endregion
 

@@ -10,17 +10,17 @@ namespace Domain.Entities.Campaigns
         #region Properties
 
         public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Campaign banner to be shown on Card.
-        /// </summary>
-        public virtual Image? BannerImage { get; set; } 
+        public string Description { get; set; } = string.Empty; 
 
         /// <summary>
         /// Owner of this Campaign.
         /// </summary>
         public virtual ApplicationUser OwnerUser { get; set; }
+
+        /// <summary>
+        /// Campaign banner to be shown on Card.
+        /// </summary>
+        public virtual Image? BannerImage { get; set; }
 
         #endregion
 
@@ -29,11 +29,12 @@ namespace Domain.Entities.Campaigns
         // Parameterless constructor for EF Core.
         private Campaign() { }
 
-        public Campaign(string name, string description)
+        public Campaign(string name, string description, Image? bannerImage)
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
+            BannerImage = bannerImage;
         }
 
         #endregion
