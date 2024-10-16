@@ -1,113 +1,121 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
+﻿@using Application.Features.CampaignFeatures.DataTransferObjects
 
+@inject IDialogService DialogService
+@inject HttpClient Http
 @inject ISnackbar Snackbar
 
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" Model="campaignDTO" Validation="@(validationResult.IsValid ? Array.Empty<string>() : validationResult.Errors.Select(e => e.ErrorMessage))" ValidationDelay="0">
+            <MudTextField @bind-Value="campaignDTO.Name"
+                          Label="Name"
+                          Required="true"
+                          For="@(() => campaignDTO.Name)"
+                          Immediate="true"
+                          OnBlur="ValidateForm"/>
+                
+            <MudTextField @bind-Value="campaignDTO.Description"
+                          Label="Description"
+                          Required="true"
+                          For="@(() => campaignDTO.Description)"
+                          Immediate="true"
+                          OnBlur="ValidateForm"/>
 
-<MudContainer Class="mt-16">
-    <MudGrid Justify="Justify.Center">
-        <MudItem xs="12" sm="8" md="6">
-            <MudCard Elevation="4" Class="pa-4">
-                <MudText Typo="Typo.h5" Align="Align.Center">Upload Image</MudText>
-                <EditForm Model="@imageUploadModel" OnValidSubmit="HandleValidSubmit">
-                    <MudStack Spacing="3">
-                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
-                            <ActivatorContent>
-                                <MudFab Color="Color.Secondary"
-                                        StartIcon="@Icons.Material.Filled.Image"
-                                        Label="Load picture" />
-                            </ActivatorContent>
-                        </MudFileUpload>
+            <MudFileUpload T="IBrowserFile"  MaximumFileCount="100">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Only image files
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
 
-                        @if (previewUrl != null)
-                        {
-                            <img src="@previewUrl" alt="Image Preview" style="max-width: 100%; height: auto;" />
-                        }
-                    </MudStack>
-                </EditForm>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadBannerImage">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Image">
+                        Single File
+                    </MudButton>
+                </ActivatorContent>
+                <SelectedTemplate>
+                    @if (context != null)
+                    {
+                        <MudText>@context.Name</MudText>
+                    }
+                    else
+                    {
+                        <MudText>No File</MudText>
+                    }
+                </SelectedTemplate>
+            </MudFileUpload>
+                
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Large" Style="width:50%;" OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" Disabled="@(!form.IsValid)" OnClick="@(async () => await HandleValidSubmit())">Create</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code
 {
-    private IBrowserFile selectedFile;
-    private string previewUrl;
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
 
-    private void UploadFiles(IBrowserFile file)
-    {
-        selectedFile = file;
-    }
+    private CampaignDTO campaignDTO = new();
 
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
+    private MudForm form;
 
-        // Optional: Preview the image
-        var resizedImage = await selectedFile.RequestImageFileAsync("image/png", 300, 300);
-        var buffer = new byte[resizedImage.Size];
-        await resizedImage.OpenReadStream().ReadAsync(buffer);
-        previewUrl = $"data:{resizedImage.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    private ValidationResult validationResult;
 
-        // Assign to the model
-        imageUploadModel.FileName = selectedFile.Name;
-        imageUploadModel.ContentType = selectedFile.ContentType;
-        imageUploadModel.Data = buffer;
-    }
+    private IBrowserFile? bannerImage { get; set; }
+
+    string Message { get; set; } = string.Empty;
+
 
     private async Task HandleValidSubmit()
     {
-        if (selectedFile == null)
+        var validator = new CampaignValidator();
+        validationResult = validator.Validate(campaignDTO);
+
+        if (!validationResult.IsValid)
         {
-            Snackbar.Add("Please select a file.", Severity.Warning);
+            foreach (var error in validationResult.Errors)
+            {
+                Snackbar.Add(error.ErrorMessage, MudBlazor.Severity.Error);
+            }
             return;
         }
 
         try
         {
-            using var content = new MultipartFormDataContent();
-            using var fileContent = new ByteArrayContent(imageUploadModel.Data);
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageUploadModel.ContentType);
-            content.Add(fileContent, "file", imageUploadModel.FileName);
+            var content = new MultipartFormDataContent();
 
-            //var response = await Http.PostAsync("https://localhost:7103/api/Upload/UploadImage", content); // Replace with your API URL
+            content.Add(new StringContent(campaignDTO.Name), "Name");
+            content.Add(new StringContent(campaignDTO.Description), "Description");
 
-            if (response.IsSuccessStatusCode)
+            // if (campaignDTO.BannerImage != null)
+            // {
+            //     var imageContent = new ByteArrayContent(campaignModel.BannerImage);
+
+            //     imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(campaignModel.BannerImageContentType);
+
+            //     content.Add(imageContent, "BannerImageFile", campaignModel.BannerImageFileName);
+            // }
+
+            var result = await CampaignService.CreateCampaignAsync(campaignDTO);
+
+            if (!result.Flag && validationResult.IsValid)
             {
-                var result = await response.Content.ReadFromJsonAsync<UploadImageResponse>();
-                Snackbar.Add($"Image uploaded successfully! ID: {result.ImageId}", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add($"Image upload failed: {response.ReasonPhrase}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task LoginAsync()
-    {
-        try
-        {
-            await form.Validate();
-
-            var result = await UserAccountService.LogInUserAccountAsync(loginUserDTO);
-
-            if (form.IsValid && result.Flag)
-            {
-                var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
-                await customAuthenticationStateProvider.UpdateAuthenticationState(result.Token);
-
-                NavigationManager.NavigateTo("/", forceLoad: true);
+                MudDialog.Close(DialogResult.Ok(true));
             }
             {
                 Message = result.Message;
             }
 
-            Snackbar.Add($"{Message} + {loginUserDTO.EmailAddress} + {loginUserDTO.Password}");
+            Snackbar.Add(Message, !result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
         }
         catch
         {
@@ -115,39 +123,54 @@
         }
     }
 
+    private void UploadBannerImage(IBrowserFile imageFile)
+    {
+        if (imageFile == null || imageFile.Size == 0) return;
+
+        using var ms = new MemoryStream();
+
+        imageFile.OpenReadStream(10485760).CopyToAsync(ms);
+
+        var fileBytes = ms.ToArray();
+
+        
+    }
+
+    private void ValidateForm()
+    {
+        var validator = new CampaignValidator();
+        
+        validationResult = validator.Validate(campaignDTO);
+        
+        form.Validate();
+    }
+
+
     /// <summary>
     /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API.
     /// </summary>
     /// <typeparam name="OrderModel"></typeparam>
-    public class CreateCampaignValidator : AbstractValidator<ImageDTO>
+    public class CampaignValidator : AbstractValidator<CampaignDTO>
     {
-        public CreateCampaignValidator()
+        public CampaignValidator()
         {
-            RuleFor(c => c.)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .EmailAddress()
-                .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
-            RuleFor(l => l.Password)
-                .NotEmpty().WithMessage("Your password cannot be empty.")
-                .MinimumLength(8).WithMessage("Your password length must be at least 8 characters.")
-                .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
-                .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.")
-                .Matches(@"[0-9]+").WithMessage("Your password must contain at least one number.")
-                .Matches(@"[\#\?\!\@\$\%\^\&\*\-\.]+").WithMessage("Your password must contain at least one special character: #?!@$ %^&*-.");
-        }
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(50).WithMessage("Name cannot exceed 50 characters.");
 
-        private async Task<bool> IsUniqueAsync(string email)
-        {
-            // Simulates a long running http call.
-            await Task.Delay(2000);
+            RuleFor(x => x.Description)
+                .NotEmpty().WithMessage("Description is required.")
+                .MaximumLength(1000).WithMessage("Description cannot exceed 1000 characters.");
 
-            return email.ToLower() != "test@test.com";
+            When(x => x.Data != null, () =>
+            {
+                RuleFor(x => x.Data!.Length).LessThanOrEqualTo(10485760).WithMessage("The maximum image file size is 10 MB.");
+            });
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<LoginUserDTO>.CreateWithOptions((LoginUserDTO)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<CampaignDTO>.CreateWithOptions((CampaignDTO)model, x => x.IncludeProperties(propertyName)));
 
             if (result.IsValid) return Array.Empty<string>();
 

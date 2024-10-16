@@ -3,10 +3,7 @@ using Application.Features.CampaignFeatures.Commands.Delete;
 using Application.Features.CampaignFeatures.Commands.Update;
 using Application.Features.CampaignFeatures.Queries.Get;
 using Application.Features.CampaignFeatures.Queries.List;
-using Application.Features.FilesFeatures.Commands;
 using Asp.Versioning;
-using Documancer.API.Features.Campaigns.Requests;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documancer.API.Controllers.v1
@@ -22,33 +19,10 @@ namespace Documancer.API.Controllers.v1
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateCampaignRequest request)
+        public async Task<IActionResult> Create(CreateCampaignCommand command)
         {
-            byte[]? imageData = null;
-            string? fileName = null;
-            string? contentType = null;
-
-            if (request.BannerImageFile != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await request.BannerImageFile.CopyToAsync(memoryStream);
-                imageData = memoryStream.ToArray();
-                fileName = request.BannerImageFile.FileName;
-                contentType = request.BannerImageFile.ContentType;
-            }
-
-            var command = new CreateCampaignCommand(
-                request.Name,
-                request.Description,
-                fileName,
-                contentType,
-                imageData
-            );
-
-            var campaignId = await Mediator.Send(command);
-            return Ok(campaignId);
+            return Ok(await Mediator.Send(command));
         }
-
 
         /// <summary>
         /// Gets all Campaign.

@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Entities.Campaigns;
 using System;
+using System.Xml.Linq;
 
 namespace Domain.Entities.Files
 {
@@ -19,5 +20,26 @@ namespace Domain.Entities.Files
         /// Owner of this Campaign.
         /// </summary>
         public virtual Campaign? OwnerCampaign { get; set; }
+
+
+        #region Constructors
+
+        // Parameterless constructor for EF Core.
+        private Image() { }
+
+        public Image(string fileName, string contentType, byte[]? data, Campaign? owner)
+        {
+            Id = Guid.NewGuid();
+            FileName = fileName;
+            ContentType = contentType;
+            Data = data;
+
+            if (owner != null)
+            {
+                owner.BannerImage = this;
+            }
+        }
+
+        #endregion
     }
 }

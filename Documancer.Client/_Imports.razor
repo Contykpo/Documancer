@@ -12,6 +12,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Blazored.LocalStorage
 @using FluentValidation
+@using FluentValidation.Results
 @using MudBlazor
 @using Documancer.Client
 @using Documancer.Client.Components
@@ -25,9 +26,11 @@
 @using Documancer.Client.Resources.Profile
 
 @using Application.Services.AuthenticationServices
+@using Application.Services.CampaignServices
 
 @inject NavigationManager NavigationManager
 @inject IUserAccountService UserAccountService
+@inject ICampaignService CampaignService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
 @inject IJSRuntime JSRuntime

@@ -10,7 +10,7 @@ namespace Application.Features.CampaignFeatures.Queries.List
         public async Task<List<CampaignDTO>> Handle(ListCampaignsQuery request, CancellationToken cancellationToken)
         {
             return await context.Campaigns
-                .Select(p => new CampaignDTO(p.Id, p.Name, p.Description))
+                .Select(c => new CampaignDTO(c.Id, c.Name, c.Description, c.BannerImage))
                 .ToListAsync();
         }
     }

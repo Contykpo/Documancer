@@ -8,11 +8,11 @@ namespace Application.Features.CampaignFeatures.Queries.Get
     {
         public async Task<CampaignDTO?> Handle(GetCampaignByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await context.Campaigns.FindAsync(request.Id);
+            var campaign = await context.Campaigns.FindAsync(request.Id);
             
-            if (product == null) return null;
+            if (campaign == null) return null;
 
-            return new CampaignDTO(product.Id, product.Name, product.Description);
+            return new CampaignDTO(campaign.Id, campaign.Name, campaign.Description, campaign.BannerImage);
         }
     }
 }

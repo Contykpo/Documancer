@@ -6,12 +6,22 @@ namespace Application.Services.AuthenticationServices
 {
     public class UserAccountService : IUserAccountService
     {
+        #region Fields
+
         private readonly HttpClient httpClient;
+
+        #endregion
+
+        #region Constructor
 
         public UserAccountService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
+
+        #endregion
+
+        #region Methods
 
         public async Task<LoginResponse> LogInUserAccountAsync(LoginUserDTO loginUserDTO)
         {
@@ -51,5 +61,7 @@ namespace Application.Services.AuthenticationServices
                 return null!;
             }
         }
+
+        #endregion
     }
 }
