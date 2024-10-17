@@ -47,6 +47,18 @@ namespace Application.Services.AuthenticationServices
             return result!;
         }
 
+        public async Task<UpdateUserCampaignsResponse> UpdateUserAccountAsync(UpdateUserCampaignsDTO updateUserDTO)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/v1/user/update", updateUserDTO);
+            var result = await response.Content.ReadFromJsonAsync<UpdateUserCampaignsResponse>();
+
+            string error = CheckResponseStatus(response);
+
+            if (!string.IsNullOrEmpty(error)) { return new UpdateUserCampaignsResponse(Flag: false, Message: error); }
+
+            return result!;
+        }
+
 
         // Class-specific methods:
 

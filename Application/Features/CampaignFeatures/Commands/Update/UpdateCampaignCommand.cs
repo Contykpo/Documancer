@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Files;
-using MediatR;
+﻿using MediatR;
 
 namespace Application.Features.CampaignFeatures.Commands.Update
 {

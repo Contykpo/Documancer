@@ -68,6 +68,26 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public async Task<UpdateUserCampaignsResponse> UpdateUserCampaignsAsync(UpdateUserCampaignsDTO updateUserDTO)
+        {
+            try
+            {
+                var user = await FindUserByEmailAsync(updateUserDTO.EmailAddress);
+
+                if (user == null) return new UpdateUserCampaignsResponse(false, "User does not exist.");
+                
+                user.Campaigns.Add(updateUserDTO.Campaign!);
+
+                await context.SaveChangesAsync();
+
+                return new UpdateUserCampaignsResponse(true, "New campaign added to user.");
+            }
+            catch (Exception exception)
+            {
+                return new UpdateUserCampaignsResponse(false, exception.Message);
+            }
+        }
+
 
         // Class-specific methods:
 

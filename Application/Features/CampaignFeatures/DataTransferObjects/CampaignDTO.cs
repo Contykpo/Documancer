@@ -17,8 +17,17 @@ namespace Application.Features.CampaignFeatures.DataTransferObjects
         [Display(Name = "Description")]
         public string Description { get; set; } = string.Empty;
 
+        #region Owner User
+
+        [EmailAddress, Required, DataType(DataType.EmailAddress)]
+        [RegularExpression("[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+", ErrorMessage = "Invalid Email. Please provide an email that follows the structure: example@mail.com")]
+        [Display(Name = "Email Address")]
+        public string OwnerEmailAddress { get; set; } = string.Empty;
+
+        #endregion
+
         #region Banner Image Properties
-        
+
         public string? FileName { get; set; } = null;
         public string? ContentType { get; set; } = null;
         

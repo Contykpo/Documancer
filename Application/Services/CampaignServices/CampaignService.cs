@@ -35,6 +35,7 @@ namespace Application.Services.CampaignServices
             return result!;
         }
 
+
         // Class-specific methods:
 
         private static string CheckResponseStatus(HttpResponseMessage response)

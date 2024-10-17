@@ -1,116 +1,118 @@
 ﻿@page "/profile"
 
+@using System.Security.Claims
+
+@inject IDialogService DialogService
 @inject IStringLocalizer<ProfileResource> Localizer
 
 
-<MudContainer Class="mt-16">
-    <MudGrid Spacing="3" Justify="Justify.Center">
-        <MudItem xs="12">
-            <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
+<AuthorizeView>
+    <Authorized>
+        <MudContainer Class="mt-16">
+            <MudGrid Spacing="3" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
 
-                <!-- Extension Information -->
-                <MudGrid Gutter="0" Justify="Justify.FlexStart">
-                    <MudItem xs="9">
+                        <!-- Extension Information -->
+                        <MudGrid Gutter="0" Justify="Justify.FlexStart">
+                            <MudItem xs="9">
+                                <!-- Text Rows -->
+                                <MudText Typo="Typo.h6">@context.User.Identity!.Name</MudText>
+                                <MudText Typo="Typo.body1" Align="Align.Left">@context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value</MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <!-- Button Row -->
+                                <MudCardActions Class="mt-2 justify-center">
+                                    <MudButton Href="/logout" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">@Localizer["Log Out"]</MudButton>
+                                </MudCardActions>
+                            </MudItem>
+                        </MudGrid>
+
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
                         <!-- Text Rows -->
-                        <MudText Typo="Typo.h6">User Name</MudText>
-                        <MudText Typo="Typo.body1" Align="Align.Left">user@example.com</MudText>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <!-- Button Row -->
-                        <MudCardActions Class="mt-2 justify-center">
-                            <MudButton Href="/logout" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">@Localizer["Log Out"]</MudButton>
-                        </MudCardActions>
-                    </MudItem>
-                </MudGrid>
-
-            </MudPaper>
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
-                <!-- Text Rows -->
-                <MudText Typo="Typo.h6">@Localizer["Campaigns"]</MudText>
-                <MudText Typo="Typo.body1" Align="Align.Left">
-                    @Localizer["Create a campaign to log your story events."]
-                </MudText>
-                <MudText Typo="Typo.body1" Align="Align.Left">
-                    @Localizer["Ongoing campaigns: "]@*+ {GetActiveCampaigns()} + Localizer["of"] + {GetUserCampaignLimit()}*@
-                </MudText>
-
-                <!-- Nested Campaign MediaCards Row -->
-                <MudGrid Class="mt-2" Gutter="0" Justify="Justify.FlexStart">
-                    <MudItem xs="6">
-                        <MudPaper Class="p-2" Elevation="1" Color="Color.Primary">
-                            <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 1</MudText>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="p-2" Elevation="1" Color="Color.Secondary">
-                            <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 2</MudText>
-                        </MudPaper>
-                    </MudItem>
-                </MudGrid>
-
-                <!-- Create a New Campaign Button Row -->
-                <MudCardActions Class="mt-2 d-flex justify-center">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="OpenCampaignCreationOverlay">@Localizer["CREATE A NEW CAMPAIGN"]</MudButton>
-                </MudCardActions>
-            </MudPaper>
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
-
-                <!-- Extension Information -->
-                <MudGrid Gutter="0" Justify="Justify.FlexStart">
-                    <MudItem xs="9">
-                        <!-- Text Rows -->
-                        <MudText Typo="Typo.h6">@Localizer["Extensions"]</MudText>
+                        <MudText Typo="Typo.h6">@Localizer["Campaigns"]</MudText>
                         <MudText Typo="Typo.body1" Align="Align.Left">
-                            @Localizer["Extend the functionality of Documancer with great first and third-party extensions."]
+                            @Localizer["Create a campaign to log your story events."]
                         </MudText>
-                    </MudItem>
-                    <MudItem xs="3">
-                        <!-- Button Row -->
-                        <MudCardActions Class="mt-2 justify-center">
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">@Localizer["Manage"]</MudButton>
+                        <MudText Typo="Typo.body1" Align="Align.Left">
+                            @Localizer["Ongoing campaigns: "]@*+ {GetActiveCampaigns()} + Localizer["of"] + {GetUserCampaignLimit()}*@
+                        </MudText>
+
+                        <!-- Nested Campaign MediaCards Row -->
+                        <MudGrid Class="mt-2" Gutter="0" Justify="Justify.FlexStart">
+                            <MudItem xs="6">
+                                <MudPaper Class="p-2" Elevation="1" Color="Color.Primary">
+                                    <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 1</MudText>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="p-2" Elevation="1" Color="Color.Secondary">
+                                    <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 2</MudText>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+
+                        <!-- Create a New Campaign Button Row -->
+                        <MudCardActions Class="mt-2 d-flex justify-center">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="OpenCampaignCreationDialog">@Localizer["CREATE A NEW CAMPAIGN"]</MudButton>
                         </MudCardActions>
-                    </MudItem>
-                </MudGrid>
+                    </MudPaper>
+                </MudItem>
 
-                <!-- Nested Extension MediaCards Row -->
-                <MudGrid Class="mt-2" Gutter="0" Justify="Justify.FlexStart">
-                    <MudItem xs="6">
-                        <MudPaper Class="p-2" Elevation="1" Color="Color.Primary">
-                            <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 1</MudText>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudPaper Class="p-2" Elevation="1" Color="Color.Secondary">
-                            <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 2</MudText>
-                        </MudPaper>
-                    </MudItem>
-                </MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
 
-            </MudPaper>
-        </MudItem>
+                        <!-- Extension Information -->
+                        <MudGrid Gutter="0" Justify="Justify.FlexStart">
+                            <MudItem xs="9">
+                                <!-- Text Rows -->
+                                <MudText Typo="Typo.h6">@Localizer["Extensions"]</MudText>
+                                <MudText Typo="Typo.body1" Align="Align.Left">
+                                    @Localizer["Extend the functionality of Documancer with great first and third-party extensions."]
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <!-- Button Row -->
+                                <MudCardActions Class="mt-2 justify-center">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">@Localizer["Manage"]</MudButton>
+                                </MudCardActions>
+                            </MudItem>
+                        </MudGrid>
 
-    </MudGrid>
-</MudContainer>
+                        <!-- Nested Extension MediaCards Row -->
+                        <MudGrid Class="mt-2" Gutter="0" Justify="Justify.FlexStart">
+                            <MudItem xs="6">
+                                <MudPaper Class="p-2" Elevation="1" Color="Color.Primary">
+                                    <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 1</MudText>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="p-2" Elevation="1" Color="Color.Secondary">
+                                    <MudText Typo="Typo.body2" Align="Align.Left">Nested Panel 2</MudText>
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
 
-<MudOverlay @bind-Visible="campaignCreationIsVisible" DarkBackground="true" ZIndex="9999" AutoClose="true">
-    <CampaignCreation />
-</MudOverlay>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
+        </MudContainer>
+
+    </Authorized>
+</AuthorizeView>
 
 
 @code
 {
-    private bool campaignCreationIsVisible = false;
-
-    public void OpenCampaignCreationOverlay()
+    private Task OpenCampaignCreationDialog()
     {
-        campaignCreationIsVisible = true;
-        
-        StateHasChanged();
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<CampaignCreation>("Campaign Creation Dialog", options);
     }
 }

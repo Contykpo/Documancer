@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241008182226_Initial")]
+    [Migration("20241017151343_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -51,9 +51,6 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BannerImageId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -66,8 +63,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BannerImageId");
 
                     b.HasIndex("OwnerUserId");
 
@@ -91,31 +86,46 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("OwnerCampaignId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerCampaignId")
+                        .IsUnique();
 
                     b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
                 {
-                    b.HasOne("Domain.Entities.Files.Image", "BannerImage")
-                        .WithMany()
-                        .HasForeignKey("BannerImageId");
-
                     b.HasOne("Domain.Entities.Authentication.ApplicationUser", "OwnerUser")
                         .WithMany("Campaigns")
                         .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BannerImage");
-
                     b.Navigation("OwnerUser");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Files.Image", b =>
+                {
+                    b.HasOne("Domain.Entities.Campaigns.Campaign", "OwnerCampaign")
+                        .WithOne("BannerImage")
+                        .HasForeignKey("Domain.Entities.Files.Image", "OwnerCampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("OwnerCampaign");
                 });
 
             modelBuilder.Entity("Domain.Entities.Authentication.ApplicationUser", b =>
                 {
                     b.Navigation("Campaigns");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
+                {
+                    b.Navigation("BannerImage");
                 });
 #pragma warning restore 612, 618
         }

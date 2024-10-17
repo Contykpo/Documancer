@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.Authorization;
 using Documancer.Client.States;
 using Documancer.Client.Extensions;
+using Application.Services.CampaignServices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -20,7 +21,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7103/") });
 
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-
+builder.Services.AddScoped<ICampaignService, CampaignService>();
+ 
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddMudServices();

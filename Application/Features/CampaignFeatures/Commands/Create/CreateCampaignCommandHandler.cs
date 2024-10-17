@@ -12,22 +12,24 @@ namespace Application.Features.CampaignFeatures.Commands.Create
         {
             Image? bannerImage = null;
 
+            var campaign = new Campaign(command.Name, command.Description, bannerImage);
+
             if (command.Data != null &&
                 command.FileName != null &&
                 command.ContentType != null)
             {
-                bannerImage = new Image
-                {
-                    FileName = command.FileName,
-                    ContentType = command.ContentType,
-                    Data = command.Data
-                };
+                bannerImage = new Image(command.FileName, command.ContentType, command.Data, campaign);
+
+                campaign.BannerImage = bannerImage;
 
                 await context.Images.AddAsync(bannerImage, cancellationToken);
             }
 
-            var campaign = new Campaign(command.Name, command.Description, bannerImage);
+            campaign.OwnerUser = context.Users.FirstOrDefault(u => u.Email == command.OwnerEmailAddress)!;
+
             await context.Campaigns.AddAsync(campaign, cancellationToken);
+
+            context.Users.FirstOrDefault(u => u.Email == command.OwnerEmailAddress)!.Campaigns.Add(campaign);
 
             await context.SaveChangesAsync();
 

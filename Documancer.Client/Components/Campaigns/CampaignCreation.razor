@@ -1,79 +1,91 @@
 ﻿@using Application.Features.CampaignFeatures.DataTransferObjects
+@using Application.Features.AuthenticationFeatures.DataTransferObjects
 
-@inject IDialogService DialogService
-@inject HttpClient Http
 @inject ISnackbar Snackbar
 
-<MudDialog>
-    <DialogContent>
-        <MudForm @ref="form" Model="campaignDTO" Validation="@(validationResult.IsValid ? Array.Empty<string>() : validationResult.Errors.Select(e => e.ErrorMessage))" ValidationDelay="0">
-            <MudTextField @bind-Value="campaignDTO.Name"
-                          Label="Name"
-                          Required="true"
-                          For="@(() => campaignDTO.Name)"
-                          Immediate="true"
-                          OnBlur="ValidateForm"/>
+<AuthorizeView>
+    <Authorized>
+        <MudDialog>
+            <TitleContent>
+                Create Campaign
+            </TitleContent>
+            <DialogContent>
+                <MudForm @ref="form" Model="campaignDTO" Validation="@(validationResult.IsValid ? Array.Empty<string>() : validationResult.Errors.Select(e => e.ErrorMessage))" ValidationDelay="0">
+                    <MudTextField @bind-Value="campaignDTO.Name"
+                                  Label="Name"
+                                  Required="true"
+                                  For="@(() => campaignDTO.Name)"
+                                  Immediate="true"
+                                  OnBlur="ValidateForm"/>
                 
-            <MudTextField @bind-Value="campaignDTO.Description"
-                          Label="Description"
-                          Required="true"
-                          For="@(() => campaignDTO.Description)"
-                          Immediate="true"
-                          OnBlur="ValidateForm"/>
+                    <MudTextField @bind-Value="campaignDTO.Description"
+                                  Label="Description"
+                                  Required="true"
+                                  For="@(() => campaignDTO.Description)"
+                                  Immediate="true"
+                                  OnBlur="ValidateForm"/>
 
-            <MudFileUpload T="IBrowserFile"  MaximumFileCount="100">
-                <ActivatorContent>
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.CloudUpload">
-                        Only image files
-                    </MudButton>
-                </ActivatorContent>
-            </MudFileUpload>
-
-            <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadBannerImage">
-                <ActivatorContent>
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Image">
-                        Single File
-                    </MudButton>
-                </ActivatorContent>
-                <SelectedTemplate>
-                    @if (context != null)
-                    {
-                        <MudText>@context.Name</MudText>
-                    }
-                    else
-                    {
-                        <MudText>No File</MudText>
-                    }
-                </SelectedTemplate>
-            </MudFileUpload>
+                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadBannerImage">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Image">
+                                Upload a Banner Image
+                            </MudButton>
+                        </ActivatorContent>
+                        <SelectedTemplate>
+                            @if (bannerImage != null)
+                            {
+                                <MudImage Src="@SelectedImageSrc" Alt="Campaign Image" Elevation="25" Class="rounded-lg" />
+                            }
+                            else
+                            {
+                                <MudText>No Selected Image</MudText>
+                            }
+                        </SelectedTemplate>
+                    </MudFileUpload>
                 
-        </MudForm>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Large" Style="width:50%;" OnClick="@(() => MudDialog.Cancel())">Cancel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;" Disabled="@(!form.IsValid)" OnClick="@(async () => await HandleValidSubmit())">Create</MudButton>
-    </DialogActions>
-</MudDialog>
+                </MudForm>
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="HandleValidSubmit">Create</MudButton>
+            </DialogActions>
+        </MudDialog>
+    </Authorized>
+
+    <NotAuthorized>
+        <MudDialog>
+            <TitleContent>
+                Campaign Creation
+            </TitleContent>
+            <DialogContent>
+                Not authorized to display content, please log in.
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+            </DialogActions>
+        </MudDialog>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code
 {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
-    private CampaignDTO campaignDTO = new();
+    CampaignDTO campaignDTO = new();
 
-    private MudForm form;
+    MudForm form;
 
-    private ValidationResult validationResult;
+    ValidationResult validationResult;
 
-    private IBrowserFile? bannerImage { get; set; }
+    IBrowserFile bannerImage { get; set; }
 
     string Message { get; set; } = string.Empty;
-
+    string SelectedImageSrc { get; set; } = string.Empty;
 
     private async Task HandleValidSubmit()
     {
@@ -96,16 +108,9 @@
             content.Add(new StringContent(campaignDTO.Name), "Name");
             content.Add(new StringContent(campaignDTO.Description), "Description");
 
-            // if (campaignDTO.BannerImage != null)
-            // {
-            //     var imageContent = new ByteArrayContent(campaignModel.BannerImage);
-
-            //     imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(campaignModel.BannerImageContentType);
-
-            //     content.Add(imageContent, "BannerImageFile", campaignModel.BannerImageFileName);
-            // }
-
             var result = await CampaignService.CreateCampaignAsync(campaignDTO);
+
+            var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
 
             if (!result.Flag && validationResult.IsValid)
             {
@@ -121,6 +126,8 @@
         {
             return;
         }
+
+        MudDialog.Close(DialogResult.Ok(true));
     }
 
     private void UploadBannerImage(IBrowserFile imageFile)
@@ -133,7 +140,13 @@
 
         var fileBytes = ms.ToArray();
 
+        campaignDTO.FileName = imageFile.Name;
+        campaignDTO.ContentType = imageFile.ContentType;
+        campaignDTO.Data = fileBytes;
+
+        var imagesrc = Convert.ToBase64String(fileBytes);
         
+        SelectedImageSrc = string.Format("data:image/jpeg;base64,{0}", imagesrc);
     }
 
     private void ValidateForm()
@@ -144,6 +157,9 @@
         
         form.Validate();
     }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
 
 
     /// <summary>
@@ -167,14 +183,5 @@
                 RuleFor(x => x.Data!.Length).LessThanOrEqualTo(10485760).WithMessage("The maximum image file size is 10 MB.");
             });
         }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<CampaignDTO>.CreateWithOptions((CampaignDTO)model, x => x.IncludeProperties(propertyName)));
-
-            if (result.IsValid) return Array.Empty<string>();
-
-            return result.Errors.Select(e => e.ErrorMessage);
-        };
     }
 }
