@@ -1,4 +1,5 @@
-﻿using Application.Features.CampaignFeatures.DataTransferObjects;
+﻿using System.Text;
+using Application.Features.CampaignFeatures.DataTransferObjects;
 using Application.Interfaces;
 using MediatR;
 
@@ -22,7 +23,7 @@ namespace Application.Features.CampaignFeatures.Queries.Get
 
                 FileName = campaign.BannerImage!.FileName,
                 ContentType = campaign.BannerImage.ContentType,
-                Data = campaign.BannerImage.Data
+                Data = Encoding.ASCII.GetString(campaign.BannerImage!.Data!) 
             };
 
             return campaignDTO;

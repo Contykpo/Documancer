@@ -28,10 +28,10 @@ namespace Application.Features.CampaignFeatures.DataTransferObjects
 
         #region Banner Image Properties
 
-        public string? FileName { get; set; } = null;
-        public string? ContentType { get; set; } = null;
-        
-        public byte[]? Data { get; set; } = null;
+        public string? FileName { get; set; } = string.Empty;
+        public string? ContentType { get; set; } = string.Empty;
+
+        public string? Data { get; set; } = string.Empty;
         
         #endregion
     }

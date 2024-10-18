@@ -18,7 +18,7 @@ namespace Documancer.API.Controllers.v1
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create(CreateCampaignCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -59,7 +59,7 @@ namespace Documancer.API.Controllers.v1
         /// <param name="id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPut("[action]")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(Guid id, UpdateCampaignCommand command)
         {
             if (id != command.Id)

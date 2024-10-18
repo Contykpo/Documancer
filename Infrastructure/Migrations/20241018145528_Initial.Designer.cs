@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241017151343_Initial")]
+    [Migration("20241018145528_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -125,7 +125,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
                 {
-                    b.Navigation("BannerImage");
+                    b.Navigation("BannerImage")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

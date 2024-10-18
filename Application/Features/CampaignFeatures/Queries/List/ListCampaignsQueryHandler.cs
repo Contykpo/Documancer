@@ -1,4 +1,5 @@
-﻿using Application.Features.CampaignFeatures.DataTransferObjects;
+﻿using System.Text;
+using Application.Features.CampaignFeatures.DataTransferObjects;
 using Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace Application.Features.CampaignFeatures.Queries.List
                     OwnerEmailAddress = c.OwnerUser.Email!,
                     FileName = c.BannerImage!.FileName,
                     ContentType = c.BannerImage!.ContentType,
-                    Data = c.BannerImage!.Data
+                    Data = Encoding.ASCII.GetString(c.BannerImage!.Data!)
                 })
                 .ToListAsync();
         }

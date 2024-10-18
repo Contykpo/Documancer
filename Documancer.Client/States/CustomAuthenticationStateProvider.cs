@@ -7,12 +7,34 @@ namespace Documancer.Client.States
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        #region Fields
+        #region Events
+
+        public event Action<ClaimsPrincipal>? UserChanged;
+
+        #endregion
+
+        #region Properties and Fields
 
         private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
         private readonly ILocalStorageService localStorageService;
         
         private const string localStorageKey = "auth";
+
+        private ClaimsPrincipal? currentUser;
+
+        public ClaimsPrincipal CurrentUser
+        {
+            get { return currentUser ?? new(); }
+            set
+            {
+                currentUser = value;
+
+                if (UserChanged is not null)
+                {
+                    UserChanged(currentUser);
+                }
+            }
+        }
 
         #endregion
 
@@ -59,7 +81,6 @@ namespace Documancer.Client.States
 
 
         // Class-specific methods:
-
 
         public static ClaimsPrincipal SetClaimPrincipal(string name, string email)
         {

@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using System.Text;
+using Application.Interfaces;
 using Domain.Entities.Campaigns;
 using Domain.Entities.Files;
 using MediatR;
@@ -18,7 +19,7 @@ namespace Application.Features.CampaignFeatures.Commands.Create
                 command.FileName != null &&
                 command.ContentType != null)
             {
-                bannerImage = new Image(command.FileName, command.ContentType, command.Data, campaign);
+                bannerImage = new Image(command.FileName, command.ContentType, Encoding.ASCII.GetBytes(command.Data), campaign);
 
                 campaign.BannerImage = bannerImage;
 

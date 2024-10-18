@@ -20,7 +20,7 @@ namespace Domain.Entities.Campaigns
         /// <summary>
         /// Campaign banner to be shown on Card.
         /// </summary>
-        public virtual Image? BannerImage { get; set; }
+        public virtual Image BannerImage { get; set; }
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace Domain.Entities.Campaigns
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
-            BannerImage = bannerImage;
+            BannerImage = bannerImage!;
 
             if (bannerImage != null)
             {

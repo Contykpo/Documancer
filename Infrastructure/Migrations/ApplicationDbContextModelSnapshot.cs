@@ -122,7 +122,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
                 {
-                    b.Navigation("BannerImage");
+                    b.Navigation("BannerImage")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
