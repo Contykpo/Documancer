@@ -36,32 +36,20 @@
                         </ActivatorContent>
                     </MudFileUpload>
 
-                    @*
-                    <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadBannerImage">
-                        <ActivatorContent>
-                            <MudButton Variant="Variant.Filled"
-                                        Color="Color.Primary"
-                                        StartIcon="@Icons.Material.Filled.Image">
-                                Upload a Banner Image
-                            </MudButton>
-                        </ActivatorContent>
-                        <SelectedTemplate>
-                            @if (bannerImage != null)
-                            {
-                                <MudImage Src="@SelectedImageSrc" Alt="Campaign Image" Elevation="25" Class="rounded-lg" />
-                            }
-                            else
-                            {
-                                <MudText>No Selected Image</MudText>
-                            }
-                        </SelectedTemplate>
-                    </MudFileUpload>
-                    *@
+                    @if (!string.IsNullOrEmpty(SelectedImageSrc))
+                    {
+                        <MudImage Src="@SelectedImageSrc" Alt="Thumbnail" Width="150" Height="150" Class="rounded-lg" />
+                    }
+                    else
+                    {
+                        <MudText>No image selected</MudText>
+                    }
+
                 </MudForm>
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="Cancel">Cancel</MudButton>
-                <MudButton Color="Color.Primary" OnClick="@(() => { campaignDTO.OwnerEmailAddress = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value; HandleValidSubmit(); } )">Create</MudButton>
+                <MudButton Color="Color.Primary" OnClick="HandleValidSubmit">Create</MudButton>
             </DialogActions>
         </MudDialog>
 
@@ -92,10 +80,11 @@
             await form.Validate();
 
             var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
-            // await campaignDTO.OwnerEmailAddress = customAuthenticationStateProvider
+            var authenticationState = await customAuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            campaignDTO.OwnerEmailAddress = authenticationState.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value;
 
             var result = await CampaignService.CreateCampaignAsync(campaignDTO);
-
 
             if (form.IsValid && result.Flag)
             {
@@ -107,29 +96,34 @@
 
             Snackbar.Add(Message, !result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
         }
-        catch
+        catch(Exception exception)
         {
-            return;
+            // Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+            MudDialog.Close(DialogResult.Ok(true));
         }
     }
 
-    private void UploadBannerImage(IBrowserFile imageFile)
+    private async Task UploadBannerImage(IBrowserFile imageFile)
     {
         if (imageFile == null || imageFile.Size == 0) return;
 
         using var ms = new MemoryStream();
 
-        imageFile.OpenReadStream(10485760).CopyToAsync(ms);
+        // Await the async copy method to ensure it's processed correctly
+        await imageFile.OpenReadStream(10485760).CopyToAsync(ms);
 
         var fileBytes = ms.ToArray();
 
+        // Store the file information in the DTO
         campaignDTO.FileName = imageFile.Name;
         campaignDTO.ContentType = imageFile.ContentType;
         campaignDTO.Data = Encoding.ASCII.GetString(fileBytes);
 
+        // Convert the image to a base64 string for previewing
         var imagesrc = Convert.ToBase64String(fileBytes);
 
-        SelectedImageSrc = string.Format("data:image/jpeg;base64,{0}", imagesrc);
+        // Set the image source for preview in the UI
+        SelectedImageSrc = $"data:{imageFile.ContentType};base64,{imagesrc}";
     }
 
     private void Cancel() => MudDialog.Cancel();

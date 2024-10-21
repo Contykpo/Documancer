@@ -7,6 +7,7 @@ namespace Application.Services.AuthenticationServices
     {
         Task<RegistrationResponse> RegisterUserAccountAsync(RegisterUserDTO registerUserDTO);
         Task<LoginResponse> LogInUserAccountAsync(LoginUserDTO loginUserDTO);
+        Task<GetUserDataResponse> GetUserCampaignsAsync(UserDataDTO userDataDTO);
         Task<UpdateUserCampaignsResponse> UpdateUserAccountAsync(UpdateUserCampaignsDTO updateUserDTO);
     }
 }

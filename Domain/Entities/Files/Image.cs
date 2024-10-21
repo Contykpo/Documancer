@@ -19,7 +19,7 @@ namespace Domain.Entities.Files
         /// <summary>
         /// Owner of this Campaign.
         /// </summary>
-        public virtual Campaign? OwnerCampaign { get; set; }
+        public virtual Campaign OwnerCampaign { get; set; }
 
 
         #region Constructors

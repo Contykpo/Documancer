@@ -20,22 +20,6 @@ namespace Documancer.Client.States
         
         private const string localStorageKey = "auth";
 
-        private ClaimsPrincipal? currentUser;
-
-        public ClaimsPrincipal CurrentUser
-        {
-            get { return currentUser ?? new(); }
-            set
-            {
-                currentUser = value;
-
-                if (UserChanged is not null)
-                {
-                    UserChanged(currentUser);
-                }
-            }
-        }
-
         #endregion
 
         #region Constructors

@@ -7,6 +7,7 @@ namespace Application.Interfaces.Contracts
     {
         Task<RegistrationResponse> RegisterUserAsync(RegisterUserDTO registerUserDTO);
         Task<LoginResponse> LoginUserAsync(LoginUserDTO loginUserDTO);
+        Task<GetUserDataResponse> GetUserCampaignsAsync(UserDataDTO userDataDTO);
         Task<UpdateUserCampaignsResponse> UpdateUserCampaignsAsync(UpdateUserCampaignsDTO updateUserDTO);
     }
 }

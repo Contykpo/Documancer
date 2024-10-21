@@ -88,6 +88,15 @@ namespace Documancer.Client.Resources.Profile {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        internal static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extend the functionality of Documancer with great first and third-party extensions..
         /// </summary>
         internal static string Extend_the_functionality_of_Documancer_with_great_first_and_third_party_extensions_ {

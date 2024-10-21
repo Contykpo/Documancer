@@ -40,6 +40,12 @@ namespace Documancer.API.Controllers.v1
             return Ok(await _user.RegisterUserAsync(registerUserDTO));
         }
 
+        [HttpPost("data")]
+        public async Task<ActionResult<GetUserDataResponse>> GetUserData(UserDataDTO userDataDTO)
+        {
+            return Ok(await _user.GetUserCampaignsAsync(userDataDTO));
+        }
+
         [HttpPost("update")]
         public async Task<ActionResult<UpdateUserCampaignsResponse>> UpdateUserCampaigns(UpdateUserCampaignsDTO updateUserDTO)
         {

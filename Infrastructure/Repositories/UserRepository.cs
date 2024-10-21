@@ -1,5 +1,6 @@
 ﻿using Application.Features.AuthenticationFeatures.DataTransferObjects;
 using Application.Features.AuthenticationFeatures.Responses;
+using Application.Features.CampaignFeatures.DataTransferObjects;
 using Application.Interfaces;
 using Application.Interfaces.Contracts;
 using Domain.Entities.Authentication;
@@ -39,6 +40,40 @@ namespace Infrastructure.Repositories
             catch (Exception exception)
             {
                 return new LoginResponse(false, exception.Message);
+            }
+        }
+
+        public async Task<GetUserDataResponse> GetUserCampaignsAsync(UserDataDTO userDataDTO)
+        {
+            try
+            {
+                var user = await FindUserByEmailAsync(userDataDTO.EmailAddress);
+
+                if (user is null) { return new GetUserDataResponse(false, "User not found."); }
+
+                List<CampaignDTO> campaigns = new List<CampaignDTO>();
+
+                if (user.Campaigns != null)
+                {
+                    foreach (var campaign in user.Campaigns)
+                    {
+                        campaigns.Add(new CampaignDTO
+                        {
+                            Name = campaign.Name,
+                            Description = campaign.Description,
+                            OwnerEmailAddress = campaign.OwnerUser!.Email!,
+                            FileName = campaign.BannerImage!.FileName,
+                            ContentType = campaign.BannerImage!.ContentType,
+                            Data = Encoding.ASCII.GetString(campaign.BannerImage!.Data!) 
+                        });
+                    }
+                }
+
+                return new GetUserDataResponse(true, $"Successfully retrieved user data. Here is the db count: {campaigns.Count}", campaigns);
+            }
+            catch (Exception exception)
+            {
+                return new GetUserDataResponse(false, exception.Message);
             }
         }
 

@@ -15,9 +15,9 @@ namespace Application.Features.CampaignFeatures.Commands.Create
 
             var campaign = new Campaign(command.Name, command.Description, bannerImage);
 
-            if (command.Data != null &&
-                command.FileName != null &&
-                command.ContentType != null)
+            if (command.Data != string.Empty &&
+                command.FileName != string.Empty &&
+                command.ContentType != string.Empty)
             {
                 bannerImage = new Image(command.FileName, command.ContentType, Encoding.ASCII.GetBytes(command.Data), campaign);
 

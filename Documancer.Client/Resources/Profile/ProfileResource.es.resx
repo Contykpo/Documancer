@@ -141,4 +141,7 @@
   <data name="Manage" xml:space="preserve">
     <value>Gestionar</value>
   </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
 </root>
