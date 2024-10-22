@@ -32,6 +32,9 @@ namespace Application.Features.CampaignFeatures.DataTransferObjects
         public string? ContentType { get; set; } = string.Empty;
 
         public string? Data { get; set; } = string.Empty;
+
+        // TODO: Might want to rework the whole image section to try this out:
+        public string? ImageSrc { get; set; } = string.Empty;
         
         #endregion
     }

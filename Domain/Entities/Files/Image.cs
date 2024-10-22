@@ -12,14 +12,14 @@ namespace Domain.Entities.Files
         public byte[]? Data { get; set; }
 
         /// <summary>
-        /// Foreign key for Campaign.
+        /// Foreign key for owner Campaign.
         /// </summary>
         public Guid? OwnerCampaignId { get; set; }
 
         /// <summary>
-        /// Owner of this Campaign.
+        /// Owner Campaign of this Image.
         /// </summary>
-        public virtual Campaign OwnerCampaign { get; set; }
+        public Campaign? OwnerCampaign { get; set; } = null!;
 
 
         #region Constructors
@@ -37,6 +37,9 @@ namespace Domain.Entities.Files
             if (owner != null)
             {
                 owner.BannerImage = this;
+            
+                OwnerCampaignId = owner.Id;
+                OwnerCampaign = owner;
             }
         }
 

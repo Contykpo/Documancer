@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241021000659_Initial")]
+    [Migration("20241021160215_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -59,7 +59,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("OwnerUserId")
+                    b.Property<Guid?>("OwnerUserId")
+                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -125,8 +126,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
                 {
-                    b.Navigation("BannerImage")
-                        .IsRequired();
+                    b.Navigation("BannerImage");
                 });
 #pragma warning restore 612, 618
         }

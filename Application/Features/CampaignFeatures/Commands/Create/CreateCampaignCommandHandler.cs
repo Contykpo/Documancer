@@ -13,7 +13,7 @@ namespace Application.Features.CampaignFeatures.Commands.Create
         {
             Image? bannerImage = null;
 
-            var campaign = new Campaign(command.Name, command.Description, bannerImage);
+            var campaign = new Campaign(command.Name, command.Description, context.Users.FirstOrDefault(u => u.Email == command.OwnerEmailAddress)!, bannerImage);
 
             if (command.Data != string.Empty &&
                 command.FileName != string.Empty &&
@@ -25,8 +25,6 @@ namespace Application.Features.CampaignFeatures.Commands.Create
 
                 await context.Images.AddAsync(bannerImage, cancellationToken);
             }
-
-            campaign.OwnerUser = context.Users.FirstOrDefault(u => u.Email == command.OwnerEmailAddress)!;
 
             await context.Campaigns.AddAsync(campaign, cancellationToken);
 

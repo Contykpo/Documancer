@@ -46,15 +46,24 @@
 
                         <!-- Nested Campaign MediaCards Row -->
                         <MudGrid Class="mt-2" Gutter="0" Justify="Justify.FlexStart">
-                            
-                            @for (int i = 0; i < Campaigns.Count; i++)
+
+                            @foreach (var campaign in Campaigns)
                             {
+                                // Get the image file bytes from the DTO
+                                var imageBytes = Encoding.ASCII.GetBytes(campaign.Data!);
+
+                                // Convert the image to a base64 string for previewing
+                                var src = Convert.ToBase64String(imageBytes);
+
+                                // Set the image source for preview in the UI
+                                var imagesrc = $"data:{campaign.ContentType};base64,{src}";
+
                                 <MudItem xs="6">
                                     <MudCard Class="p-2" Elevation="1">
-                                        <MudCardMedia Image="@BannerImageSources[i]" Height="200" />
+                                        <MudCardMedia Image="@imagesrc" Height="200" />
                                         <MudCardContent>
-                                            <MudText Typo="Typo.h5">@Campaigns[i].Name</MudText>
-                                            <MudText Typo="Typo.body2">@Campaigns[i].Description</MudText>
+                                            <MudText Typo="Typo.h5">@campaign.Name</MudText>
+                                            <MudText Typo="Typo.body2">@campaign.Description</MudText>
                                         </MudCardContent>
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Text" Color="Color.Primary">@Localizer["Edit"]</MudButton>
@@ -137,17 +146,9 @@
             foreach (var campaign in userData.Campaigns)
             {
                 Campaigns.Add(campaign);
-
-                // Get the image file bytes from the DTO
-                var imageBytes = Encoding.ASCII.GetBytes(campaign.Data!);
-
-                // Convert the image to a base64 string for previewing
-                var imagesrc = Convert.ToBase64String(imageBytes);
-
-                BannerImageSources.Add(imagesrc);
             }
 
-            Snackbar.Add($"{userData.Message}. Campaigns count: {userData.Campaigns.Count}", MudBlazor.Severity.Success);
+            Snackbar.Add($"{userData.Message} Campaigns count: {userData.Campaigns.Count}.", MudBlazor.Severity.Success);
         }
     }
 

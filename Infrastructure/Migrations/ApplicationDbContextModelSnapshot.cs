@@ -56,7 +56,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("OwnerUserId")
+                    b.Property<Guid?>("OwnerUserId")
+                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -122,8 +123,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Campaigns.Campaign", b =>
                 {
-                    b.Navigation("BannerImage")
-                        .IsRequired();
+                    b.Navigation("BannerImage");
                 });
 #pragma warning restore 612, 618
         }

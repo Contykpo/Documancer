@@ -51,25 +51,31 @@ namespace Infrastructure.Repositories
 
                 if (user is null) { return new GetUserDataResponse(false, "User not found."); }
 
-                List<CampaignDTO> campaigns = new List<CampaignDTO>();
+                var userCampaigns = (from c in context.Campaigns where c.OwnerUserId.Equals(user.Id) select c).ToList();
 
-                if (user.Campaigns != null)
+                if (userCampaigns.IsNullOrEmpty()) { return new GetUserDataResponse(false, "Campaigns could not be found."); }
+
+                var userCampaignDTOs = new List<CampaignDTO>();
+
+                foreach (var campaign in userCampaigns)
                 {
-                    foreach (var campaign in user.Campaigns)
+                    var campaignBanner = await context.Images.FirstOrDefaultAsync(i => i.OwnerCampaignId == campaign.Id);
+
+                    userCampaignDTOs.Add(new CampaignDTO
                     {
-                        campaigns.Add(new CampaignDTO
-                        {
-                            Name = campaign.Name,
-                            Description = campaign.Description,
-                            OwnerEmailAddress = campaign.OwnerUser!.Email!,
-                            FileName = campaign.BannerImage!.FileName,
-                            ContentType = campaign.BannerImage!.ContentType,
-                            Data = Encoding.ASCII.GetString(campaign.BannerImage!.Data!) 
-                        });
-                    }
+                        Id = campaign.Id,
+                        Name = campaign.Name,
+                        Description = campaign.Description,
+
+                        OwnerEmailAddress = userDataDTO.EmailAddress,
+
+                        FileName = campaignBanner != null ? campaignBanner.FileName : string.Empty,
+                        ContentType = campaignBanner != null ? campaignBanner.ContentType : string.Empty,
+                        Data = campaignBanner != null ? Encoding.ASCII.GetString(campaignBanner.Data!) : string.Empty
+                    });
                 }
 
-                return new GetUserDataResponse(true, $"Successfully retrieved user data. Here is the db count: {campaigns.Count}", campaigns);
+                return new GetUserDataResponse(true, $"Successfully retrieved user data. Here is the db count: {userCampaigns.Count}.", userCampaignDTOs);
             }
             catch (Exception exception)
             {

@@ -13,6 +13,6 @@ namespace Domain.Entities.Authentication
         /// <summary>
         /// Active Campaigns managed by the User.
         /// </summary>
-        public virtual List<Campaign> Campaigns { get; set; } = new List<Campaign>();
+        public ICollection<Campaign> Campaigns { get; set; } = new List<Campaign>();
     }
 }
