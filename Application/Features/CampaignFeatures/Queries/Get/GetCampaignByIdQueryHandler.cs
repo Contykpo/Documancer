@@ -23,7 +23,7 @@ namespace Application.Features.CampaignFeatures.Queries.Get
 
                 FileName = campaign.BannerImage!.FileName,
                 ContentType = campaign.BannerImage.ContentType,
-                Data = Encoding.ASCII.GetString(campaign.BannerImage!.Data!) 
+                Data = campaign.BannerImage!.Data!
             };
 
             return campaignDTO;

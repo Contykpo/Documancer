@@ -15,11 +15,11 @@ namespace Application.Features.CampaignFeatures.Commands.Create
 
             var campaign = new Campaign(command.Name, command.Description, context.Users.FirstOrDefault(u => u.Email == command.OwnerEmailAddress)!, bannerImage);
 
-            if (command.Data != string.Empty &&
+            if (command.Data != null &&
                 command.FileName != string.Empty &&
                 command.ContentType != string.Empty)
             {
-                bannerImage = new Image(command.FileName, command.ContentType, Encoding.ASCII.GetBytes(command.Data), campaign);
+                bannerImage = new Image(command.FileName!, command.ContentType!, command.Data, campaign);
 
                 campaign.BannerImage = bannerImage;
 

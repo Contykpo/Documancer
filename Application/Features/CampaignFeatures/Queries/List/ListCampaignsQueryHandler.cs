@@ -19,7 +19,7 @@ namespace Application.Features.CampaignFeatures.Queries.List
                     OwnerEmailAddress = c.OwnerUser.Email!,
                     FileName = c.BannerImage!.FileName,
                     ContentType = c.BannerImage!.ContentType,
-                    Data = Encoding.ASCII.GetString(c.BannerImage!.Data!)
+                    Data = c.BannerImage!.Data!
                 })
                 .ToListAsync();
         }

@@ -3,7 +3,7 @@
 @using System.Security.Claims
 
 @inject ISnackbar Snackbar
-
+@inject IStringLocalizer<CampaignCreationResource> Localizer
 
 <AuthorizeView>
     <Authorized>
@@ -17,21 +17,19 @@
                     <MudTextField @bind-Value="campaignDTO.Name"
                                   For="@(() => campaignDTO.Name)"
                                   Required="true"
-                                  Label="Name"
-                                  />
+                                  Label="@Localizer["Name"]" />
                 
                     <MudTextField @bind-Value="campaignDTO.Description"
                                   For="@(() => campaignDTO.Description)"
                                   Required="true"
-                                  Label="Description"
-                                  />
+                                  Label="@Localizer["Description"]" />
 
                     <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadBannerImage">
                         <ActivatorContent>
                             <MudButton Variant="Variant.Filled"
                                        Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.CloudUpload">
-                                Upload Files
+                                @Localizer["Upload an optional Image Banner"]
                             </MudButton>
                         </ActivatorContent>
                     </MudFileUpload>
@@ -42,7 +40,7 @@
                     }
                     else
                     {
-                        <MudText>No image selected</MudText>
+                        <MudText>@Localizer["No image selected"]</MudText>
                     }
 
                 </MudForm>
@@ -88,13 +86,15 @@
 
             if (form.IsValid && result.Flag)
             {
-                MudDialog.Close(DialogResult.Ok(true));
+                NavigationManager.NavigateTo("/profile", forceLoad: true);
             }
             {
                 Message = result.Message;
             }
 
-            Snackbar.Add(Message, !result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
+            Snackbar.Add(Message, result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
+
+            NavigationManager.NavigateTo("/profile", forceLoad: true);
         }
         catch(Exception exception)
         {
@@ -117,7 +117,7 @@
         // Store the file information in the DTO
         campaignDTO.FileName = imageFile.Name;
         campaignDTO.ContentType = imageFile.ContentType;
-        campaignDTO.Data = Encoding.ASCII.GetString(fileBytes);
+        campaignDTO.Data = fileBytes;
 
         // Convert the image to a base64 string for previewing
         var imagesrc = Convert.ToBase64String(fileBytes);

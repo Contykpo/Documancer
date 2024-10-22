@@ -10,7 +10,7 @@
 
 <AuthorizeView>
     <Authorized>
-            <MudContainer Class="mt-16">
+        <MudContainer Class="mt-8">
             <MudGrid Spacing="3" Justify="Justify.Center">
                 <MudItem xs="12">
                     <MudPaper Elevation="2" Class="rounded-lg pb-4" Style="margin-bottom: 16px; padding: 16px; ">
@@ -49,21 +49,20 @@
 
                             @foreach (var campaign in Campaigns)
                             {
-                                // Get the image file bytes from the DTO
-                                var imageBytes = Encoding.ASCII.GetBytes(campaign.Data!);
-
                                 // Convert the image to a base64 string for previewing
-                                var src = Convert.ToBase64String(imageBytes);
+                                var src = Convert.ToBase64String(campaign.Data!);
 
                                 // Set the image source for preview in the UI
                                 var imagesrc = $"data:{campaign.ContentType};base64,{src}";
 
-                                <MudItem xs="6">
+                                <MudItem xs="12" sm="6" md="4" Style="display:flex; max-height: 350px;">
                                     <MudCard Class="p-2" Elevation="1">
-                                        <MudCardMedia Image="@imagesrc" Height="200" />
-                                        <MudCardContent>
+                                        <MudCardMedia Image="@imagesrc" Style="display:flex; width: 350px; height: 200px;">
+                                            <MudImage Src="@imagesrc" Fluid="true" Width="350" Height="200" Class="rounded-lg"></MudImage>
+                                        </MudCardMedia>
+                                        <MudCardContent Style="min-height: 110px;">
                                             <MudText Typo="Typo.h5">@campaign.Name</MudText>
-                                            <MudText Typo="Typo.body2">@campaign.Description</MudText>
+                                            <MudText Typo="Typo.body2">@StringHelpers.TruncateText(campaign.Description, maxDescriptionLength)</MudText>
                                         </MudCardContent>
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Text" Color="Color.Primary">@Localizer["Edit"]</MudButton>
@@ -130,6 +129,8 @@
 
     public List<string> BannerImageSources = new List<string>();
 
+    private int maxDescriptionLength = 150;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,4 +159,5 @@
 
         return DialogService.ShowAsync<CampaignCreation>("Campaign Creation Dialog", options);
     }
+
 }

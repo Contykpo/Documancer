@@ -78,7 +78,7 @@
                 Message = result.Message;
             }
 
-            Snackbar.Add($"{Message} + {loginUserDTO.EmailAddress} + {loginUserDTO.Password}");
+            Snackbar.Add($"{Message} + {loginUserDTO.EmailAddress} + {loginUserDTO.Password}", form.IsValid && result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
         }
         catch
         {

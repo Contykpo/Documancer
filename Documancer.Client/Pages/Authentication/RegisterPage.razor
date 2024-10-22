@@ -78,7 +78,7 @@
 
             var result = await UserAccountService.RegisterUserAccountAsync(registerUserDTO);
 
-            if (!result.Flag && form.IsValid)
+            if (result.Flag && form.IsValid)
             {
                 NavigationManager.NavigateTo("/login", forceLoad: true);
             }
@@ -86,7 +86,7 @@
                 Message = result.Message;
             }
 
-            Snackbar.Add(Message);
+            Snackbar.Add(Message, result.Flag && form.IsValid ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
         }
         catch
         {

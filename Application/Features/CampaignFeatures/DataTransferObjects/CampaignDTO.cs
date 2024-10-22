@@ -31,7 +31,7 @@ namespace Application.Features.CampaignFeatures.DataTransferObjects
         public string? FileName { get; set; } = string.Empty;
         public string? ContentType { get; set; } = string.Empty;
 
-        public string? Data { get; set; } = string.Empty;
+        public byte[]? Data { get; set; }
 
         // TODO: Might want to rework the whole image section to try this out:
         public string? ImageSrc { get; set; } = string.Empty;

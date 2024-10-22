@@ -71,7 +71,7 @@ namespace Infrastructure.Repositories
 
                         FileName = campaignBanner != null ? campaignBanner.FileName : string.Empty,
                         ContentType = campaignBanner != null ? campaignBanner.ContentType : string.Empty,
-                        Data = campaignBanner != null ? Encoding.ASCII.GetString(campaignBanner.Data!) : string.Empty
+                        Data = campaignBanner != null ? campaignBanner.Data! : []
                     });
                 }
 

@@ -44,6 +44,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AuthenticationResource.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Campaigns\CampaignCreationResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CampaignCreationResource.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Layout\LayoutResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -60,6 +65,10 @@
     <EmbeddedResource Update="Resources\Authentication\AuthenticationResource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AuthenticationResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Campaigns\CampaignCreationResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CampaignCreationResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Layout\LayoutResource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
