@@ -3,6 +3,7 @@ using Application.Features.CampaignFeatures.Commands.Delete;
 using Application.Features.CampaignFeatures.Commands.Update;
 using Application.Features.CampaignFeatures.Queries.Get;
 using Application.Features.CampaignFeatures.Queries.List;
+using Application.Features.CampaignFeatures.Responses;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,16 +34,18 @@ namespace Documancer.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new ListCampaignsQuery()));
         }
+        
         /// <summary>
         /// Gets Campaign Entity by Id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<ActionResult<GetCampaignByIdResponse>> GetById(Guid id)
         {
             return Ok(await Mediator.Send(new GetCampaignByIdQuery(id)));
         }
+
         /// <summary>
         /// Deletes Campaign Entity based on Id.
         /// </summary>
@@ -53,6 +56,7 @@ namespace Documancer.API.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteCampaignByIdCommand(id)));
         }
+        
         /// <summary>
         /// Updates the CampaignEntity based on Id.
         /// </summary>

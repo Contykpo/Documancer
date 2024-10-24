@@ -1,14 +1,45 @@
-﻿@inject IStringLocalizer<LayoutResource> Localizer
+﻿@using System.Security.Claims
+@using Application.Features.CampaignFeatures.DataTransferObjects
+@using Application.Features.AuthenticationFeatures.DataTransferObjects
+
+@inject IStringLocalizer<LayoutResource> Localizer
+
 
 <MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All">@Localizer["Home"]</MudNavLink>
     <AuthorizeView>
         <Authorized>
             <MudNavGroup Title="@Localizer["Campaigns"]" Expanded="true">
-                <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
-                <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">Weather</MudNavLink>
+                @foreach (var campaign in Campaigns)
+                {
+                    <MudNavLink Href="@($"/campaign/{campaign.Id}")" Match="NavLinkMatch.Prefix">@campaign.Name</MudNavLink>
+                }
             </MudNavGroup>
         </Authorized>
     </AuthorizeView>
     @* <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink> *@
 </MudNavMenu>
+
+@code
+{
+    public List<CampaignDTO> Campaigns = new List<CampaignDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
+        var authenticationState = await customAuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var userData = await UserAccountService.GetUserCampaignsAsync(new UserDataDTO
+            {
+                EmailAddress = authenticationState.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value
+            });
+
+        if (userData.Flag && userData.Campaigns != null)
+        {
+            foreach (var campaign in userData.Campaigns)
+            {
+                Campaigns.Add(campaign);
+            }
+        }
+    }
+}

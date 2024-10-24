@@ -1,33 +1,44 @@
-﻿using System.Text;
-using Application.Features.CampaignFeatures.DataTransferObjects;
+﻿using Application.Features.CampaignFeatures.DataTransferObjects;
+using Application.Features.CampaignFeatures.Responses;
 using Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.CampaignFeatures.Queries.Get
 {
-    public class GetCampaignByIdQueryHandler(IApplicationDbContext context) : IRequestHandler<GetCampaignByIdQuery, CampaignDTO?>
+    public class GetCampaignByIdQueryHandler(IApplicationDbContext context) : IRequestHandler<GetCampaignByIdQuery, GetCampaignByIdResponse?>
     {
-        public async Task<CampaignDTO?> Handle(GetCampaignByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetCampaignByIdResponse?> Handle(GetCampaignByIdQuery request, CancellationToken cancellationToken)
         {
-            var campaign = await context.Campaigns.FindAsync(request.Id);
-            
-            if (campaign == null) return null;
-
-            var campaignDTO = new CampaignDTO
+            try
             {
-                Id = campaign.Id,
-                Name = campaign.Name,
-                Description = campaign.Description,
+                var campaign = await context.Campaigns.FirstOrDefaultAsync(c => c.Id == request.Id);
+                if (campaign == null) return new GetCampaignByIdResponse(false, "Failed to retrieve Campaign.");
 
-                OwnerEmailAddress = campaign.OwnerUser.Email!,
+                var ownerUser = await context.Users.FirstOrDefaultAsync(u => u.Id == campaign.OwnerUserId);                
+                if (ownerUser == null) return new GetCampaignByIdResponse(false, "Failed to retrieve Campaign Owner's email address.");
+                
+                var bannerImage = await context.Images.FirstOrDefaultAsync(i => i.OwnerCampaignId == campaign.Id);
 
-                FileName = campaign.BannerImage!.FileName,
-                ContentType = campaign.BannerImage.ContentType,
-                Data = campaign.BannerImage!.Data!
-            };
+                var campaignDTO = new CampaignDTO
+                {
+                    Id = campaign.Id,
+                    Name = campaign.Name,
+                    Description = campaign.Description,
 
-            return campaignDTO;
+                    OwnerEmailAddress = ownerUser!.Email!,
 
+                    FileName = bannerImage != null ? bannerImage.FileName : string.Empty,
+                    ContentType = bannerImage != null ? bannerImage.ContentType : string.Empty,
+                    Data = bannerImage != null ? bannerImage.Data! : []
+                };
+
+                return new GetCampaignByIdResponse(true, $"Successfully retrieved Campaign with Id: {campaignDTO.Id}.", campaignDTO);
+            }
+            catch (Exception exception)
+            {
+                return new GetCampaignByIdResponse(false, exception.Message);
+            }
         }
     }
 }

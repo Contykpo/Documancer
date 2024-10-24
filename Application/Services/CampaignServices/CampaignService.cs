@@ -1,6 +1,7 @@
 ﻿using Application.Features.CampaignFeatures.Responses;
 using Application.Features.CampaignFeatures.DataTransferObjects;
 using System.Net.Http.Json;
+using Application.Features.CampaignFeatures.Queries.Get;
 
 namespace Application.Services.CampaignServices
 {
@@ -35,6 +36,14 @@ namespace Application.Services.CampaignServices
             return result!;
         }
 
+        public async Task<GetCampaignByIdResponse> GetCampaignAsync(Guid id)
+        {
+            var response = await httpClient.GetFromJsonAsync<CampaignDTO>($"api/v1/campaign/{id}");
+
+            if (response == null) { return new GetCampaignByIdResponse(Flag: false, Message: "Failed to retrieve Campaign from Id."); }
+
+            return new GetCampaignByIdResponse(Flag: true, Message: "Successfully retrieved Campaign.", response);
+        }
 
         // Class-specific methods:
 

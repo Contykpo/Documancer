@@ -1,0 +1,40 @@
+﻿@page "/campaign/{campaignId:Guid}"
+
+@using Application.Features.CampaignFeatures.DataTransferObjects
+@using Application.Features.AuthenticationFeatures.DataTransferObjects
+
+@inject HttpClient Http
+
+
+<h3>Campaign Details</h3>
+
+@if (Campaign == null)
+{
+    <p>Loading campaign details...</p>
+}
+else
+{
+    <MudCard Class="p-2" Elevation="1">
+        <MudCardMedia>
+
+        </MudCardMedia>
+        <MudCardContent>
+            <MudText Typo="Typo.h5">@Campaign.Name</MudText>
+            <MudText Typo="Typo.body2">@Campaign.Description</MudText>
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    [Parameter]
+    public Guid campaignId { get; set; }
+
+    public CampaignDTO Campaign { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await CampaignService.GetCampaignAsync(campaignId);
+
+        Campaign = response.Campaign;
+    }
+}

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.CampaignFeatures.DataTransferObjects;
 
 namespace Application.Features.CampaignFeatures.Responses
 {
-    public record GetCampaignByIdResponse(Guid Id, bool Flag = false, string Message = null!);
+    public record GetCampaignByIdResponse(bool Flag = false, string Message = null!, CampaignDTO Campaign = null!);
 }
