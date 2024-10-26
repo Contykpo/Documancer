@@ -38,11 +38,9 @@ namespace Application.Services.CampaignServices
 
         public async Task<GetCampaignByIdResponse> GetCampaignAsync(Guid id)
         {
-            var response = await httpClient.GetFromJsonAsync<CampaignDTO>($"api/v1/campaign/{id}");
+            var response = await httpClient.GetFromJsonAsync<GetCampaignByIdResponse>($"api/v1/campaign/{id}");
 
-            if (response == null) { return new GetCampaignByIdResponse(Flag: false, Message: "Failed to retrieve Campaign from Id."); }
-
-            return new GetCampaignByIdResponse(Flag: true, Message: "Successfully retrieved Campaign.", response);
+            return response!;
         }
 
         // Class-specific methods:

@@ -51,7 +51,7 @@ namespace Documancer.API.Controllers.v1
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return Ok(await Mediator.Send(new DeleteCampaignByIdCommand(id)));

@@ -1,4 +1,4 @@
-﻿@page "/campaign/{campaignId:Guid}"
+﻿@page "/campaign/{campaignId:guid}"
 
 @using Application.Features.CampaignFeatures.DataTransferObjects
 @using Application.Features.AuthenticationFeatures.DataTransferObjects
@@ -6,30 +6,81 @@
 @inject HttpClient Http
 
 
-<h3>Campaign Details</h3>
-
-@if (Campaign == null)
+@if (CampaignSessions != null && Campaign != null)
 {
-    <p>Loading campaign details...</p>
+    <MudGrid Spacing="2" Style="height: 100vh;">
+        <!-- Left Panel for Sessions -->
+        <MudItem xs="3" Style="height: 100%;">
+            <MudText Typo="Typo.h6">Campaign Sessions</MudText>
+
+            <MudStack Spacing="2">
+                @foreach (var session in CampaignSessions)
+                {
+                    <MudText Typo="Typo.body1">@session.Name</MudText>
+                }
+            </MudStack>
+        </MudItem>
+
+        <!-- Chat Box Panel -->
+        <MudItem xs="6" Style="height: 100%;">
+            <MudPaper Elevation="25" Style="height: 90vh;">
+                <MudToolBar Dense="true">
+                    @if (Campaign is null)
+                    {
+                        <MudIcon Icon="@Icons.Material.Outlined.Person" Style="margin-right:10px"></MudIcon>
+                        <MudText Typo="Typo.h6">chat</MudText>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Outlined.ChatBubble" Style="margin-right:10px"></MudIcon>
+                        <MudText Typo="Typo.h6">Dungeon GPT</MudText>
+                    }
+                </MudToolBar>
+                <div class="d-flex flex-column px-4" style="flex-grow: 1; overflow-y: auto;" id="chatContainer">
+                    @foreach (var message in messages)
+                    {
+                        <div class="d-flex flex-row my-4">
+                            <div class="mr-4">
+                                <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.UserEmail.ToUpper().FirstOrDefault()</MudAvatar>
+                            </div>
+                            <div>
+                                <MudText Typo="Typo.body1">@message.UserEmail</MudText>
+                                <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>
+                                <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Message</MudText>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
+                    <MudTextField T="string" Placeholder="Enter your message..."DisableUnderLine="true" Class="mt-n2 mx-4" @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" />
+                    <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+                </MudPaper>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Placeholder for Campaign Properties Menu -->
+        <MudItem xs="3" Style="height: 100%;">
+            <MudPaper Class="p-2">
+                <MudText Typo="Typo.h5">Campaign Properties</MudText>
+                <MudText Typo="Typo.h5">@Campaign.Name</MudText>
+                <MudText Typo="Typo.body2">@Campaign.Description</MudText>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
 }
 else
 {
-    <MudCard Class="p-2" Elevation="1">
-        <MudCardMedia>
-
-        </MudCardMedia>
-        <MudCardContent>
-            <MudText Typo="Typo.h5">@Campaign.Name</MudText>
-            <MudText Typo="Typo.body2">@Campaign.Description</MudText>
-        </MudCardContent>
-    </MudCard>
+    <MudText Typo="Typo.h6">Loading campaign data...</MudText>
 }
 
-@code {
+@code
+{
     [Parameter]
     public Guid campaignId { get; set; }
 
     public CampaignDTO Campaign { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,4 +88,55 @@ else
 
         Campaign = response.Campaign;
     }
+
+    private async Task SubmitAsync()
+    {
+        
+    }
+
+
+    #region Sessions
+
+    private List<SessionDTO> CampaignSessions { get; set; } = new(); // Initialize to prevent null reference
+
+    private async Task<List<SessionDTO>> LoadCampaignSessionsAsync()
+    {
+        // Simulated async loading, replace with actual API call
+        await Task.Delay(500);
+        return new List<SessionDTO>
+        {
+            new SessionDTO { Name = "Session 1: Introduction" },
+            new SessionDTO { Name = "Session 2: The Adventure Continues" },
+            new SessionDTO { Name = "Session 3: Climax" }
+        };
+    }
+
+    public class SessionDTO
+    {
+        public string Name { get; set; }
+    }
+
+    #endregion
+
+    #region Messages
+
+    public string CurrentMessage { get; set; }
+
+    private List<ChatMessage> messages = new List<ChatMessage>();
+
+    public class ChatMessage
+    {
+        public Guid Id { get; set; }
+
+        public string FromUserId { get; set; }
+        public string ToUserId { get; set; }
+        public string Message { get; set; }
+        
+        public string UserEmail { get; set; }
+
+
+        public DateTime CreatedDate { get; set; }
+    }
+
+    #endregion
 }
