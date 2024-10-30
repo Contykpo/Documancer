@@ -2,6 +2,8 @@
 using Application.Features.CampaignFeatures.DataTransferObjects;
 using System.Net.Http.Json;
 using Application.Features.CampaignFeatures.Queries.Get;
+using Application.Features.SessionFeatures.Responses;
+using Application.Features.SessionFeatures.DataTransferObjects;
 
 namespace Application.Services.CampaignServices
 {
@@ -32,6 +34,18 @@ namespace Application.Services.CampaignServices
             string error = CheckResponseStatus(response);
 
             if (!string.IsNullOrEmpty(error)) { return new CreateCampaignResponse(Flag: false, Message: error); }
+
+            return result!;
+        }
+
+        public async Task<CreateCampaignSessionResponse> CreateCampaignSessionAsync(SessionDTO sessionDTO)
+        {
+            var response = await httpClient.PostAsJsonAsync("api/v1/session/create", sessionDTO);
+            var result = await response.Content.ReadFromJsonAsync<CreateCampaignSessionResponse>();
+
+            string error = CheckResponseStatus(response);
+
+            if (!string.IsNullOrEmpty(error)) { return new CreateCampaignSessionResponse(Flag: false, Message: error); }
 
             return result!;
         }

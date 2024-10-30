@@ -1,5 +1,6 @@
 ﻿using Application.Features.CampaignFeatures.DataTransferObjects;
 using Application.Features.CampaignFeatures.Responses;
+using Application.Features.SessionFeatures.DataTransferObjects;
 using Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ namespace Application.Features.CampaignFeatures.Queries.Get
 
                 var ownerUser = await context.Users.FirstOrDefaultAsync(u => u.Id == campaign.OwnerUserId);                
                 if (ownerUser == null) return new GetCampaignByIdResponse(false, "Failed to retrieve Campaign Owner's email address.");
+
+                var campaignSessions = (from s in context.Sessions select s).ToList();
                 
                 var bannerImage = await context.Images.FirstOrDefaultAsync(i => i.OwnerCampaignId == campaign.Id);
 
@@ -32,6 +35,17 @@ namespace Application.Features.CampaignFeatures.Queries.Get
                     ContentType = bannerImage != null ? bannerImage.ContentType : string.Empty,
                     Data = bannerImage != null ? bannerImage.Data! : []
                 };
+
+                foreach (var session in campaignSessions)
+                {
+                    campaignDTO.Sessions.Add(new SessionDTO
+                    {
+                        Id = session.Id,
+                        OwnerCampaignId = (Guid)session!.OwnerCampaignId!,
+                        CreationDate = session.CreationDate,
+                        Notes = session.Notes.ToList<string>()
+                    });
+                }
 
                 return new GetCampaignByIdResponse(true, $"Successfully retrieved Campaign with Id: {campaignDTO.Id}.", campaignDTO);
             }

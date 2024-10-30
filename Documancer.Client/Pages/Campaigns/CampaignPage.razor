@@ -1,34 +1,45 @@
 ﻿@page "/campaign/{campaignId:guid}"
 
 @using Application.Features.CampaignFeatures.DataTransferObjects
+@using Application.Features.SessionFeatures.DataTransferObjects
 @using Application.Features.AuthenticationFeatures.DataTransferObjects
 
-@inject HttpClient Http
+@inject ISnackbar Snackbar
+@* @inject IStringLocalizer<CampaignResource> Localizer *@
 
 
-@if (CampaignSessions != null && Campaign != null)
+@if (Campaign != null)
 {
-    <MudGrid Spacing="2" Style="height: 100vh;">
+    <MudGrid Spacing="2" class="pt-2" Style="height: 95vh;">
+        
         <!-- Left Panel for Sessions -->
         <MudItem xs="3" Style="height: 100%;">
-            <MudText Typo="Typo.h6">Campaign Sessions</MudText>
+            <MudPaper Class="p-2" Style="height: 100%; display: flex; flex-direction: column;">
+                <MudText Typo="Typo.h6">Campaign Sessions</MudText>
 
-            <MudStack Spacing="2">
-                @foreach (var session in CampaignSessions)
+                <MudButton Class="mt-2 d-flex justify-center" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="CreateNewSession">NEW SESSION</MudButton>
+
+                @if (CampaignSessions != null)
                 {
-                    <MudText Typo="Typo.body1">@session.Name</MudText>
+                    <MudStack Spacing="2" Style="flex-grow: 1; overflow-y: auto;">
+                        @foreach (var session in CampaignSessions)
+                        {
+                            <MudText Typo="Typo.body1">@session.CreationDate.ToString()</MudText>
+                        }
+                    </MudStack>
                 }
-            </MudStack>
+
+            </MudPaper>
         </MudItem>
 
         <!-- Chat Box Panel -->
         <MudItem xs="6" Style="height: 100%;">
-            <MudPaper Elevation="25" Style="height: 90vh;">
+            <MudPaper Elevation="25" Style="height: 100%; display: flex; flex-direction: column;">
                 <MudToolBar Dense="true">
                     @if (Campaign is null)
                     {
                         <MudIcon Icon="@Icons.Material.Outlined.Person" Style="margin-right:10px"></MudIcon>
-                        <MudText Typo="Typo.h6">chat</MudText>
+                        <MudText Typo="Typo.h6">Chat</MudText>
                     }
                     else
                     {
@@ -36,7 +47,9 @@
                         <MudText Typo="Typo.h6">Dungeon GPT</MudText>
                     }
                 </MudToolBar>
-                <div class="d-flex flex-column px-4" style="flex-grow: 1; overflow-y: auto;" id="chatContainer">
+
+                <!-- Messages Container -->
+                <div style="flex-grow: 1; overflow-y: auto; padding: 0 16px;" id="chatContainer">
                     @foreach (var message in messages)
                     {
                         <div class="d-flex flex-row my-4">
@@ -51,23 +64,26 @@
                         </div>
                     }
                 </div>
-                <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4" Style="">
-                    <MudTextField T="string" Placeholder="Enter your message..."DisableUnderLine="true" Class="mt-n2 mx-4" @bind-Value="CurrentMessage" For="@(()=> CurrentMessage)" />
-                    <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary" ButtonType="ButtonType.Button">Send</MudButton>
+
+                <!-- Message Input Section at Bottom -->
+                <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4 mt-2" Style="align-items: center;">
+                    <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4" @bind-Value="CurrentMessage" />
+                    <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary">Send</MudButton>
                 </MudPaper>
             </MudPaper>
         </MudItem>
 
         <!-- Placeholder for Campaign Properties Menu -->
         <MudItem xs="3" Style="height: 100%;">
-            <MudPaper Class="p-2">
+            <MudPaper Class="p-2" Style="height: 100%; display: flex; flex-direction: column;">
                 <MudText Typo="Typo.h5">Campaign Properties</MudText>
                 <MudText Typo="Typo.h5">@Campaign.Name</MudText>
                 <MudText Typo="Typo.body2">@Campaign.Description</MudText>
             </MudPaper>
         </MudItem>
-
+    
     </MudGrid>
+
 }
 else
 {
@@ -81,12 +97,39 @@ else
 
     public CampaignDTO Campaign { get; set; }
 
+    public List<SessionDTO> CampaignSessions { get; set; } = new();
+
 
     protected override async Task OnInitializedAsync()
     {
         var response = await CampaignService.GetCampaignAsync(campaignId);
 
         Campaign = response.Campaign;
+
+        CampaignSessions = Campaign.Sessions;
+    }
+
+    private async Task CreateNewSession()
+    {
+        try
+        {
+            var result = await CampaignService.CreateCampaignSessionAsync(new SessionDTO
+            {
+                OwnerCampaignId = campaignId,
+                CreationDate = DateTimeOffset.Now
+            });
+
+            if (result.Flag)
+            {
+                NavigationManager.NavigateTo($"/campaign/{campaignId}", forceLoad: true);
+            }
+
+            Snackbar.Add(result.Message, result.Flag ? MudBlazor.Severity.Success : MudBlazor.Severity.Error);
+        }
+        catch
+        {
+            return;
+        }
     }
 
     private async Task SubmitAsync()
@@ -94,29 +137,6 @@ else
         
     }
 
-
-    #region Sessions
-
-    private List<SessionDTO> CampaignSessions { get; set; } = new(); // Initialize to prevent null reference
-
-    private async Task<List<SessionDTO>> LoadCampaignSessionsAsync()
-    {
-        // Simulated async loading, replace with actual API call
-        await Task.Delay(500);
-        return new List<SessionDTO>
-        {
-            new SessionDTO { Name = "Session 1: Introduction" },
-            new SessionDTO { Name = "Session 2: The Adventure Continues" },
-            new SessionDTO { Name = "Session 3: Climax" }
-        };
-    }
-
-    public class SessionDTO
-    {
-        public string Name { get; set; }
-    }
-
-    #endregion
 
     #region Messages
 

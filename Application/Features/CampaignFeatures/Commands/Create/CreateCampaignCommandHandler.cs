@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Domain.Entities.Campaigns;
 using Domain.Entities.Files;
 using MediatR;

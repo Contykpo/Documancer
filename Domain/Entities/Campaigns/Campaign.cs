@@ -2,6 +2,7 @@
 using Domain.Entities.Authentication;
 using Domain.Entities.Files;
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities.Campaigns
 {
@@ -16,6 +17,11 @@ namespace Domain.Entities.Campaigns
         /// Optional Campaign banner to be shown on Card.
         /// </summary>
         public Image? BannerImage { get; set; } = null!;
+
+        /// <summary>
+        /// Campaign sessions history.
+        /// </summary>
+        public ICollection<Session> Sessions { get; set; } = new List<Session>();
 
         #endregion
 

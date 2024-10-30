@@ -1,4 +1,5 @@
 ﻿using Application.Features.AuthenticationFeatures.DataTransferObjects;
+using Application.Features.SessionFeatures.DataTransferObjects;
 using Domain.Entities.Files;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,6 +24,12 @@ namespace Application.Features.CampaignFeatures.DataTransferObjects
         [RegularExpression("[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+", ErrorMessage = "Invalid Email. Please provide an email that follows the structure: example@mail.com")]
         [Display(Name = "Email Address")]
         public string OwnerEmailAddress { get; set; } = string.Empty;
+
+        #endregion
+
+        #region Sessions
+
+        public List<SessionDTO> Sessions { get; set; } = new List<SessionDTO>();
 
         #endregion
 

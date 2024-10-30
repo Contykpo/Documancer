@@ -13,6 +13,7 @@ namespace Infrastructure.Context
         #region Properties and Fields
 
         public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<Session> Sessions { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Image> Images { get; set; }
 
@@ -60,6 +61,13 @@ namespace Infrastructure.Context
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // --- Campaign Session
+            modelBuilder.Entity<Campaign>()
+                .HasMany(e => e.Sessions)
+                .WithOne(e => e.OwnerCampaign)
+                .HasForeignKey(e => e.OwnerCampaignId)
+                .IsRequired(false);
+
             #endregion
 
             #region Image
@@ -70,6 +78,17 @@ namespace Infrastructure.Context
                 .WithOne(e => e.BannerImage)
                 .HasForeignKey<Image>(e => e.OwnerCampaignId)
                 .IsRequired(false);
+
+            #endregion
+
+            #region Sessions
+
+            // --- Sessions Campaigns
+            modelBuilder.Entity<Session>()
+                .HasOne(e => e.OwnerCampaign)
+                .WithMany(e => e.Sessions)
+                .HasForeignKey(e => e.OwnerCampaignId)
+                .IsRequired(true);
 
             #endregion
         }
