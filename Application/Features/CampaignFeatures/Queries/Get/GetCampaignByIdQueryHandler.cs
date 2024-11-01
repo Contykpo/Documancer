@@ -2,6 +2,7 @@
 using Application.Features.CampaignFeatures.Responses;
 using Application.Features.SessionFeatures.DataTransferObjects;
 using Application.Interfaces;
+using Domain.Entities.Campaigns;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ namespace Application.Features.CampaignFeatures.Queries.Get
                 var ownerUser = await context.Users.FirstOrDefaultAsync(u => u.Id == campaign.OwnerUserId);                
                 if (ownerUser == null) return new GetCampaignByIdResponse(false, "Failed to retrieve Campaign Owner's email address.");
 
-                var campaignSessions = (from s in context.Sessions select s).ToList();
+                var campaignSessions = await context.Sessions.Where(s => s.OwnerCampaignId == campaign.Id).ToListAsync();
                 
                 var bannerImage = await context.Images.FirstOrDefaultAsync(i => i.OwnerCampaignId == campaign.Id);
 
@@ -43,7 +44,7 @@ namespace Application.Features.CampaignFeatures.Queries.Get
                         Id = session.Id,
                         OwnerCampaignId = (Guid)session!.OwnerCampaignId!,
                         CreationDate = session.CreationDate,
-                        Notes = session.Notes.ToList<string>()
+                        Notes = new List<string>(session.Notes)
                     });
                 }
 

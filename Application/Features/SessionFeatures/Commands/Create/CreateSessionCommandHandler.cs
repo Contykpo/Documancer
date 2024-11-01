@@ -8,7 +8,7 @@ namespace Application.Features.SessionFeatures.Commands.Create
     {
         public async Task<Guid> Handle(CreateSessionCommand command, CancellationToken cancellationToken)
         {
-            var session = new Session(command.CreationDate, command.OwnerCampaignId);
+            var session = new Session(command.CreationDate, command.OwnerCampaignId, command.Notes);
 
             await context.Sessions.AddAsync(session, cancellationToken);
 

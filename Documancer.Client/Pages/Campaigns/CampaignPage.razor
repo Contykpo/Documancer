@@ -24,7 +24,9 @@
                     <MudStack Spacing="2" Style="flex-grow: 1; overflow-y: auto;">
                         @foreach (var session in CampaignSessions)
                         {
-                            <MudText Typo="Typo.body1">@session.CreationDate.ToString()</MudText>
+                            <MudPaper Class="pa-3">
+                                <MudText Typo="Typo.body1">@session.CreationDate.ToString()</MudText>
+                            </MudPaper>
                         }
                     </MudStack>
                 }

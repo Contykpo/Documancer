@@ -40,7 +40,8 @@ namespace Infrastructure.Context
                 .HasMany(e => e.Campaigns)
                 .WithOne(e => e.OwnerUser)
                 .HasForeignKey(e => e.OwnerUserId)
-                .IsRequired(true);
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion
 
@@ -66,7 +67,8 @@ namespace Infrastructure.Context
                 .HasMany(e => e.Sessions)
                 .WithOne(e => e.OwnerCampaign)
                 .HasForeignKey(e => e.OwnerCampaignId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
 
             #endregion
 
