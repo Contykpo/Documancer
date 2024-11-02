@@ -12,7 +12,7 @@
             <MudNavGroup Title="@Localizer["Campaigns"]" Expanded="true">
                 @foreach (var campaign in Campaigns)
                 {
-                    <MudNavLink Href="@($"/campaign/{campaign.Id}")" Match="NavLinkMatch.Prefix">@campaign.Name</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.Prefix" OnClick="@(() => NavigationManager.NavigateTo($"/campaign/{campaign.Id}", forceLoad: true))">@campaign.Name</MudNavLink>
                 }
             </MudNavGroup>
         </Authorized>
