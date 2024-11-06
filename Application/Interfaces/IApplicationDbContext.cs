@@ -11,6 +11,8 @@ namespace Application.Interfaces
         #region Properties
 
         DbSet<Campaign> Campaigns { get; set; }
+        DbSet<Narrator> Narrators { get; set; }
+        DbSet<NarratorMessage> NarratorMessages { get; set; }
         DbSet<Session> Sessions { get; set; }
         DbSet<ApplicationUser> Users { get; set; }
         DbSet<Image> Images { get; set; }

@@ -40,6 +40,7 @@ namespace Infrastructure
             });
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGPTNarratorRepository, GPTNarratorRepository>();
         }
     }
 }

@@ -67,6 +67,60 @@ namespace Infrastructure.Migrations
                     b.ToTable("Campaigns");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Campaigns.Narrator", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GPTConversationId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OwnerCampaignId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerCampaignId");
+
+                    b.ToTable("Narrators");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Campaigns.NarratorMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConversationId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OwnerNarratorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerNarratorId");
+
+                    b.ToTable("NarratorMessages");
+                });
+
             modelBuilder.Entity("Domain.Entities.Campaigns.Session", b =>
                 {
                     b.Property<Guid>("Id")
@@ -80,8 +134,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
-                    b.Property<Guid?>("OwnerCampaignId")
-                        .IsRequired()
+                    b.Property<Guid>("OwnerCampaignId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -130,6 +183,28 @@ namespace Infrastructure.Migrations
                     b.Navigation("OwnerUser");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Campaigns.Narrator", b =>
+                {
+                    b.HasOne("Domain.Entities.Campaigns.Campaign", "OwnerCampaign")
+                        .WithMany("Narrators")
+                        .HasForeignKey("OwnerCampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OwnerCampaign");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Campaigns.NarratorMessage", b =>
+                {
+                    b.HasOne("Domain.Entities.Campaigns.Narrator", "OwnerNarrator")
+                        .WithMany("Messages")
+                        .HasForeignKey("OwnerNarratorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OwnerNarrator");
+                });
+
             modelBuilder.Entity("Domain.Entities.Campaigns.Session", b =>
                 {
                     b.HasOne("Domain.Entities.Campaigns.Campaign", "OwnerCampaign")
@@ -160,7 +235,14 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("BannerImage");
 
+                    b.Navigation("Narrators");
+
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Campaigns.Narrator", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

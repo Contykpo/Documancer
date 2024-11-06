@@ -14,6 +14,8 @@ namespace Infrastructure.Context
 
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<Narrator> Narrators { get; set; }
+        public DbSet<NarratorMessage> NarratorMessages { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Image> Images { get; set; }
 
@@ -70,6 +72,14 @@ namespace Infrastructure.Context
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // --- Campaign Narrator
+            modelBuilder.Entity<Campaign>()
+                .HasMany(e => e.Narrators)
+                .WithOne(e => e.OwnerCampaign)
+                .HasForeignKey(e => e.OwnerCampaignId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
             #endregion
 
             #region Image
@@ -90,6 +100,36 @@ namespace Infrastructure.Context
                 .HasOne(e => e.OwnerCampaign)
                 .WithMany(e => e.Sessions)
                 .HasForeignKey(e => e.OwnerCampaignId)
+                .IsRequired(true);
+
+            #endregion
+
+            #region Narrator
+
+            // --- Narrator Campaign
+            modelBuilder.Entity<Narrator>()
+                .HasOne(e => e.OwnerCampaign)
+                .WithMany(e => e.Narrators)
+                .HasForeignKey(e => e.OwnerCampaignId)
+                .IsRequired(true);
+
+            // --- Narrator NarratorMessage
+            modelBuilder.Entity<Narrator>()
+                .HasMany(e => e.Messages)
+                .WithOne(e => e.OwnerNarrator)
+                .HasForeignKey(e => e.OwnerNarratorId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            #endregion
+
+            #region Narrator Message
+
+            // --- NarratorMessage Narrator
+            modelBuilder.Entity<NarratorMessage>()
+                .HasOne(e => e.OwnerNarrator)
+                .WithMany(e => e.Messages)
+                .HasForeignKey(e => e.OwnerNarratorId)
                 .IsRequired(true);
 
             #endregion

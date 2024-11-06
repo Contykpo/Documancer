@@ -25,12 +25,12 @@ namespace Domain.Entities.Campaigns
             #region Owner Campaign Properties
 
             /// <summary>
-            /// Foreign key for owner User of this Campaign.
+            /// Foreign key for owner Campaign of this Session.
             /// </summary>
-            public Guid? OwnerCampaignId { get; set; }
+            public Guid OwnerCampaignId { get; set; }
 
             /// <summary>
-            /// Owner of this Campaign.
+            /// Owner Campaign of this Session.
             /// </summary>
             public Campaign OwnerCampaign { get; set; } = null!;
 

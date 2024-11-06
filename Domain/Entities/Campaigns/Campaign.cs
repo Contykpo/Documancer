@@ -23,6 +23,11 @@ namespace Domain.Entities.Campaigns
         /// </summary>
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
 
+        /// <summary>
+        /// Campaign active narrators.
+        /// </summary>
+        public ICollection<Narrator> Narrators { get; set; } = new List<Narrator>();
+
         #endregion
 
         #region Owner User Properties
