@@ -9,13 +9,15 @@ namespace Infrastructure.Repositories
 {
     public class GPTNarratorRepository(IApplicationDbContext context, IConfiguration configuration) : IGPTNarratorRepository
     {
-        public async Task CreateNewConversationAsync(string conversationId, Guid campaignId)
+        public async Task<Guid> CreateNewConversationAsync(string conversationId, Guid campaignId)
         {
             var conversationNarrator = new Narrator(conversationId, DateTime.UtcNow, campaignId);
             
             context.Narrators.Add(conversationNarrator);
             
             await context.SaveChangesAsync();
+
+            return conversationNarrator.Id;
         }
 
         public async Task SaveMessageAsync(Guid ownerNarratorId, string conversationId, string role, string content)

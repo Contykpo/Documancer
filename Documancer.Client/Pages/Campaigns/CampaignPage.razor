@@ -4,6 +4,8 @@
 @using Application.Features.SessionFeatures.DataTransferObjects
 @using Application.Features.AuthenticationFeatures.DataTransferObjects
 
+@inject HttpClient Http
+
 @inject ISnackbar Snackbar
 @* @inject IStringLocalizer<CampaignResource> Localizer *@
 
@@ -36,43 +38,45 @@
 
         <!-- Chat Box Panel -->
         <MudItem xs="6" Style="height: 100%;">
-            <MudPaper Elevation="25" Style="height: 100%; display: flex; flex-direction: column;">
-                <MudToolBar Dense="true">
-                    @if (Campaign is null)
-                    {
-                        <MudIcon Icon="@Icons.Material.Outlined.Person" Style="margin-right:10px"></MudIcon>
-                        <MudText Typo="Typo.h6">Chat</MudText>
-                    }
-                    else
-                    {
-                        <MudIcon Icon="@Icons.Material.Outlined.ChatBubble" Style="margin-right:10px"></MudIcon>
-                        <MudText Typo="Typo.h6">Dungeon GPT</MudText>
-                    }
-                </MudToolBar>
+            <MudContainer Style="margin: auto; max-width: 650px;">
+                <MudStack Spacing="2">
+                    <MudSelect T="string" Label="Select Roleplay System" @bind-Value="selectedModel">
+                        @foreach (var model in modelOptions)
+                        {
+                            <MudSelectItem Value="@model">@model</MudSelectItem>
+                        }
+                    </MudSelect>
 
-                <!-- Messages Container -->
-                <div style="flex-grow: 1; overflow-y: auto; padding: 0 16px;" id="chatContainer">
-                    @foreach (var message in messages)
-                    {
-                        <div class="d-flex flex-row my-4">
-                            <div class="mr-4">
-                                <MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.UserEmail.ToUpper().FirstOrDefault()</MudAvatar>
-                            </div>
-                            <div>
-                                <MudText Typo="Typo.body1">@message.UserEmail</MudText>
-                                <MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>
-                                <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Message</MudText>
-                            </div>
-                        </div>
-                    }
-                </div>
+                    <MudSelect T="string" Label="Select Prompt" @bind-Value="selectedPrompt">
+                        @foreach (var prompt in prompts)
+                        {
+                            <MudSelectItem Value="@prompt">@prompt</MudSelectItem>
+                        }
+                    </MudSelect>
 
-                <!-- Message Input Section at Bottom -->
-                <MudPaper Elevation="25" Class="d-flex flex-row px-2 mx-4 mt-2" Style="align-items: center;">
-                    <MudTextField T="string" Placeholder="Enter your message..." DisableUnderLine="true" Class="mt-n2 mx-4" @bind-Value="CurrentMessage" />
-                    <MudButton OnClick="SubmitAsync" StartIcon="@Icons.Material.Outlined.Send" Color="Color.Secondary">Send</MudButton>
-                </MudPaper>
-            </MudPaper>
+                    <MudPaper Class="pa-4">
+                        @foreach (var message in Messages)
+                        {
+                            <div class="d-flex flex-row my-4">
+                                <div class="mr-4">
+                                    @*<MudAvatar Color="Color.Secondary" Style="height:50px; width:50px;">@message.UserEmail.ToUpper().FirstOrDefault()</MudAvatar>*@
+                                </div>
+                                <div>
+                                    <MudText Typo="Typo.body1">@message</MudText>
+                                    @*<MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>*@                                    <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Message</MudText>
+                                </div>
+                            </div>
+                        }
+                    </MudPaper>
+
+                    <MudTextField @bind-Value="CurrentMessage" Placeholder="Type your message..." Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Send" OnAdornmentClick="SendMessage" />
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="StartNewConversation">
+                        Start New Conversation
+                    </MudButton>
+                </MudStack>
+            </MudContainer>
         </MudItem>
 
         <!-- Placeholder for Campaign Properties Menu -->
@@ -102,6 +106,15 @@ else
     public List<SessionDTO> CampaignSessions { get; set; } = new();
 
 
+    public string selectedModel { get; set;  } = "gpt-3.5-turbo";
+    public string selectedPrompt { get; set; } = string.Empty;
+    public string CurrentMessage { get; set; } = string.Empty;
+    public List<string> Messages { get; set; } = new List<string>();
+    public List<string> modelOptions { get; set; } = new() { "gpt-3.5-turbo", "gpt-4" };
+    public List<string> prompts { get; set; } = new() { "Fantasy Adventure", "Mystery Thriller", "Sci-Fi Exploration" };
+
+
+
     protected override async Task OnInitializedAsync()
     {
         var response = await CampaignService.GetCampaignAsync(campaignId);
@@ -110,6 +123,36 @@ else
 
         CampaignSessions = Campaign.Sessions;
     }
+
+
+    // GPT Narrator:
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(CurrentMessage))
+        {
+            var response = await GPTNarratorService.SendMessageAsync(, conversationId, CurrentMessage, selectedModel);
+            Messages.Add($"You: {CurrentMessage}");
+            Messages.Add($"AI: {response}");
+            CurrentMessage = "";
+        }
+    }
+
+    private async Task StartNewConversation()
+    {
+        var initialResponse = await GPTNarratorService.SendMessageAsync(, conversationId, selectedPrompt, selectedModel);
+        Messages.Clear();
+        Messages.Add($"AI: {initialResponse}");
+    }
+
+    private async Task LoadConversationHistory(string conversationId)
+    {
+        var history = await GPTNarratorService.GetConversationHistoryAsync(conversationId);
+        Messages = history.Select(msg => $"AI: {msg}").ToList();
+    }
+
+
+    // Sessions:
 
     private async Task CreateNewSession()
     {
@@ -134,31 +177,4 @@ else
         }
     }
 
-    private async Task SubmitAsync()
-    {
-        
-    }
-
-
-    #region Messages
-
-    public string CurrentMessage { get; set; }
-
-    private List<ChatMessage> messages = new List<ChatMessage>();
-
-    public class ChatMessage
-    {
-        public Guid Id { get; set; }
-
-        public string FromUserId { get; set; }
-        public string ToUserId { get; set; }
-        public string Message { get; set; }
-        
-        public string UserEmail { get; set; }
-
-
-        public DateTime CreatedDate { get; set; }
-    }
-
-    #endregion
 }

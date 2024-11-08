@@ -20,8 +20,7 @@ namespace Application.Services.CampaignServices
             _conversationRepository = conversationRepository;
 
             // Set up authorization header for the OpenAI API
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _config["OpenAI:ApiKey"]);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config["OpenAI:ApiKey"]);
         }
 
         // Send a message in an existing conversation
@@ -47,7 +46,7 @@ namespace Application.Services.CampaignServices
         }
 
         // Start a new conversation with an initial prompt
-        public async Task<string> StartNewConversationAsync(Guid campaignId, Guid narratorId, string initialPrompt, string model = "gpt-3.5-turbo")
+        public async Task<string> StartNewConversationAsync(Guid campaignId, string initialPrompt, string model = "gpt-3.5-turbo")
         {
             // Generate a unique conversation ID (could be GUID or similar)
             var conversationId = Guid.NewGuid().ToString();
@@ -65,8 +64,9 @@ namespace Application.Services.CampaignServices
             var result = await response.Content.ReadFromJsonAsync<OpenAINarratorResponse>();
             var aiResponse = result?.Choices?.FirstOrDefault()?.Message?.Content ?? "No response";
 
-            // Save the initial messages to the database under the new conversation ID
-            await _conversationRepository.CreateNewConversationAsync(conversationId, campaignId);
+            // Save the initial messages to the database under the new conversation ID:
+            var narratorId = await _conversationRepository.CreateNewConversationAsync(conversationId, campaignId);
+            
             await _conversationRepository.SaveMessageAsync(narratorId, conversationId, "user", initialPrompt);
             await _conversationRepository.SaveMessageAsync(narratorId, conversationId, "assistant", aiResponse);
 
