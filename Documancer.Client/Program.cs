@@ -21,8 +21,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7103/") });
 
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-builder.Services.AddScoped<ICampaignService, CampaignService>();
 builder.Services.AddScoped<IGPTNarratorService, GPTNarratorService>();
+builder.Services.AddScoped<ICampaignService, CampaignService>();
 
 builder.Services.AddBlazoredLocalStorage();
 

@@ -1,6 +1,10 @@
-﻿using Application.Features.NarratorFeatures.DataTransferObjects;
+﻿using Application.Features.AuthenticationFeatures.Responses;
+using Application.Features.NarratorFeatures.DataTransferObjects;
+using Application.Features.NarratorFeatures.Responses;
+using Application.Interfaces.Contracts;
 using Application.Services.CampaignServices;
 using Asp.Versioning;
+using Domain.Entities.Campaigns;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documancer.API.Controllers.v1
@@ -12,15 +16,15 @@ namespace Documancer.API.Controllers.v1
     {
         #region Fields
 
-        private readonly IGPTNarratorService _GPTNarratorService;
+        private readonly IGPTNarratorRepository _GPTNarratorRepository;
 
         #endregion
 
         #region Constructors
 
-        public NarratorController(IGPTNarratorService chatGPTService)
+        public NarratorController(IGPTNarratorRepository gptNarratorRepository)
         {
-            _GPTNarratorService = chatGPTService;
+            _GPTNarratorRepository = gptNarratorRepository;
         }
 
         #endregion
@@ -28,17 +32,24 @@ namespace Documancer.API.Controllers.v1
         #region Methods
 
         [HttpPost("new-conversation")]
-        public async Task<IActionResult> StartNewConversation(NarratorMessageDTO request)
+        public async Task<ActionResult<CreateNewConversationResponse>> StartNewConversation(NarratorMessageDTO request)
         {
-            var response = await _GPTNarratorService.StartNewConversationAsync(request.OwnerCampaignId, request.OwnerNarratorId, request.Content, request.Model);
-            return Ok(response);
+            // Save the initial messages to the database under the new conversation ID:
+            var narratorId = await _GPTNarratorRepository.CreateNewConversationAsync(request.ConversationId, request.OwnerCampaignId);
+
+            await _GPTNarratorRepository.SaveMessageAsync(Guid.Parse(request.ConversationId), request.ConversationId, "user", request.AssociatedPrompt);
+            await _GPTNarratorRepository.SaveMessageAsync(Guid.Parse(request.ConversationId), request.ConversationId, "assistant", request.Content);
+
+            return Ok(narratorId);
         }
 
         [HttpPost("send-message")]
-        public async Task<IActionResult> SendMessage(NarratorMessageDTO request)
+        public async Task<ActionResult<SendMessageResponse>> SendMessage(NarratorMessageDTO request)
         {
-            var response = await _GPTNarratorService.SendMessageAsync(request.OwnerNarratorId, request.ConversationId, request.Content, request.Model);
-            return Ok(response);
+            // Save the conversation message to the database.
+            await _GPTNarratorRepository.SaveMessageAsync(request.OwnerNarratorId, request.ConversationId, "user", request.AssociatedPrompt);
+
+            return Ok(await _GPTNarratorRepository.SaveMessageAsync(request.OwnerNarratorId, request.ConversationId, "assistant", request.Content));
         }
 
         [HttpGet("get-history/{conversationId}")]

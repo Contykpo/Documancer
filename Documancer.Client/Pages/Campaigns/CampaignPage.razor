@@ -2,6 +2,7 @@
 
 @using Application.Features.CampaignFeatures.DataTransferObjects
 @using Application.Features.SessionFeatures.DataTransferObjects
+@using Application.Features.NarratorFeatures.DataTransferObjects
 @using Application.Features.AuthenticationFeatures.DataTransferObjects
 
 @inject HttpClient Http
@@ -63,7 +64,8 @@
                                 </div>
                                 <div>
                                     <MudText Typo="Typo.body1">@message</MudText>
-                                    @*<MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>*@                                    <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message.Message</MudText>
+                                    @*<MudText Typo="Typo.caption" Style="font-size: xx-small!important;">@message.CreatedDate.ToString("dd MMM, yyyy hh:mm tt")</MudText>*@
+                                    <MudText Typo="Typo.body2" Style=" padding: 15px;background-color: var(--mud-palette-background-grey);border-radius: 5px;margin-top:5px">@message</MudText>
                                 </div>
                             </div>
                         }
@@ -103,16 +105,17 @@ else
 
     public CampaignDTO Campaign { get; set; }
 
-    public List<SessionDTO> CampaignSessions { get; set; } = new();
+    public NarratorDTO CurrentNarrator { get; set; }
 
+    public List<SessionDTO> CampaignSessions { get; set; } = new();
 
     public string selectedModel { get; set;  } = "gpt-3.5-turbo";
     public string selectedPrompt { get; set; } = string.Empty;
     public string CurrentMessage { get; set; } = string.Empty;
+    
     public List<string> Messages { get; set; } = new List<string>();
     public List<string> modelOptions { get; set; } = new() { "gpt-3.5-turbo", "gpt-4" };
     public List<string> prompts { get; set; } = new() { "Fantasy Adventure", "Mystery Thriller", "Sci-Fi Exploration" };
-
 
 
     protected override async Task OnInitializedAsync()
@@ -131,7 +134,7 @@ else
     {
         if (!string.IsNullOrWhiteSpace(CurrentMessage))
         {
-            var response = await GPTNarratorService.SendMessageAsync(, conversationId, CurrentMessage, selectedModel);
+            var response = await GPTNarratorService.SendMessageAsync(CurrentNarrator.Id, CurrentNarrator.GPTConversationId, CurrentMessage, selectedModel);
             Messages.Add($"You: {CurrentMessage}");
             Messages.Add($"AI: {response}");
             CurrentMessage = "";
@@ -140,7 +143,7 @@ else
 
     private async Task StartNewConversation()
     {
-        var initialResponse = await GPTNarratorService.SendMessageAsync(, conversationId, selectedPrompt, selectedModel);
+        var initialResponse = await GPTNarratorService.SendMessageAsync(CurrentNarrator.Id, CurrentNarrator.GPTConversationId, selectedPrompt, selectedModel);
         Messages.Clear();
         Messages.Add($"AI: {initialResponse}");
     }
