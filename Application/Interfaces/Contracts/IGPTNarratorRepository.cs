@@ -7,6 +7,6 @@ namespace Application.Interfaces.Contracts
     {
         Task<CreateNewConversationResponse> CreateNewConversationAsync(string conversationId, Guid campaignId);
         Task<SendMessageResponse> SaveMessageAsync(Guid ownerNarratorId, string conversationId, string role, string content);
-        Task<List<NarratorMessageDTO>> GetMessagesByConversationIdAsync(string conversationId);
+        Task<GetMessagesByConversationIdResponse> GetMessagesByConversationIdAsync(string conversationId);
     }
 }

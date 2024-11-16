@@ -42,7 +42,16 @@ namespace Infrastructure.Repositories
 
                 await context.SaveChangesAsync();
 
-                return new SendMessageResponse(true, $"Successfully sent message prompt and saved narrator response: {message.OwnerNarratorId}.");
+                var messageDTO = new NarratorMessageDTO()
+                {
+                    Id = message.Id,
+                    OwnerNarratorId = ownerNarratorId,
+                    Role = role,
+                    Content = content,
+                    Timestamp = DateTime.UtcNow
+                };
+
+                return new SendMessageResponse(true, $"Successfully sent message prompt and saved narrator response: {message.OwnerNarratorId}.", messageDTO);
             }
             catch (Exception exception)
             {
@@ -50,25 +59,32 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<List<NarratorMessageDTO>> GetMessagesByConversationIdAsync(string conversationId)
+        public async Task<GetMessagesByConversationIdResponse> GetMessagesByConversationIdAsync(string conversationId)
         {
-            var messages = context.NarratorMessages.Where(m => m.ConversationId == conversationId).OrderBy(m => m.Timestamp).ToList();
-            var messageDTOs = new List<NarratorMessageDTO>();
-
-            foreach (var message in messages)
+            try
             {
-                messageDTOs.Add(new NarratorMessageDTO
-                {
-                    Id = message.Id,
-                    OwnerNarratorId = message.OwnerNarratorId,
-                    ConversationId = message.ConversationId,
-                    Role = message.Role,
-                    Content = message.Content,
-                    Timestamp = message.Timestamp,
-                });
-            }
+                var messages = context.NarratorMessages.Where(m => m.ConversationId == conversationId).OrderBy(m => m.Timestamp).ToList();
+                var messageDTOs = new List<NarratorMessageDTO>();
 
-            return messageDTOs;
+                foreach (var message in messages)
+                {
+                    messageDTOs.Add(new NarratorMessageDTO
+                    {
+                        Id = message.Id,
+                        OwnerNarratorId = message.OwnerNarratorId,
+                        ConversationId = message.ConversationId,
+                        Role = message.Role,
+                        Content = message.Content,
+                        Timestamp = message.Timestamp,
+                    });
+                }
+
+                return new GetMessagesByConversationIdResponse(true, $"Successfully retrieved messages from conversation: {conversationId}", messageDTOs);
+            }
+            catch (Exception exception)
+            {
+                return new GetMessagesByConversationIdResponse(false, exception.Message);
+            }
         }
     }
 }

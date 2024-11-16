@@ -6,6 +6,6 @@ namespace Application.Services.CampaignServices
     {
         Task<SendMessageResponse> SendMessageAsync(Guid narratorId, string conversationId, string prompt, string model);
         Task<CreateNewConversationResponse> StartNewConversationAsync(Guid campaignId, string initialPrompt, string model);
-        Task<List<string>> GetConversationHistoryAsync(string conversationId);
+        Task<GetMessagesByConversationIdResponse> GetConversationHistoryAsync(string conversationId);
     }
 }

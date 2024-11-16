@@ -53,10 +53,9 @@ namespace Documancer.API.Controllers.v1
         }
 
         [HttpGet("get-history/{conversationId}")]
-        public async Task<IActionResult> GetConversationHistory(string conversationId)
+        public async Task<ActionResult<GetMessagesByConversationIdResponse>> GetConversationHistory(string conversationId)
         {
-            var history = await _GPTNarratorService.GetConversationHistoryAsync(conversationId);
-            return Ok(history);
+            return Ok(await _GPTNarratorRepository.GetMessagesByConversationIdAsync(conversationId));
         }
 
         #endregion

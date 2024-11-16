@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Application.Features.AuthenticationFeatures.DataTransferObjects;
 using Application.Features.AuthenticationFeatures.Responses;
+using Application.Features.CampaignFeatures.Responses;
 using Application.Features.NarratorFeatures.DataTransferObjects;
 using Application.Features.NarratorFeatures.Responses;
 using Application.Interfaces.Contracts;
@@ -112,12 +113,13 @@ namespace Application.Services.CampaignServices
         }
 
         // Fetch conversation history for a given conversation ID.
-        public async Task<List<string>> GetConversationHistoryAsync(string conversationId)
+        public async Task<GetMessagesByConversationIdResponse> GetConversationHistoryAsync(string conversationId)
         {
-            var messages = await _conversationRepository.GetMessagesByConversationIdAsync(conversationId);
-
             // Format messages for display, e.g., "Role: MessageContent".
-            return messages.Select(m => $"{m.Role}: {m.Content}").ToList();
+            // messages.Select(m => $"{m.Role}: {m.Content}").ToList();
+            var response = await httpClient.GetFromJsonAsync<GetMessagesByConversationIdResponse>($"api/v1/narrator/{conversationId}");
+
+            return response!;
         }
 
 

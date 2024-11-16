@@ -136,7 +136,7 @@ else
         {
             var response = await GPTNarratorService.SendMessageAsync(CurrentNarrator.Id, CurrentNarrator.GPTConversationId, CurrentMessage, selectedModel);
             Messages.Add($"You: {CurrentMessage}");
-            Messages.Add($"AI: {response}");
+            Messages.Add($"AI: {response.NarratorMessage.Content}");
             CurrentMessage = "";
         }
     }
@@ -145,13 +145,13 @@ else
     {
         var initialResponse = await GPTNarratorService.SendMessageAsync(CurrentNarrator.Id, CurrentNarrator.GPTConversationId, selectedPrompt, selectedModel);
         Messages.Clear();
-        Messages.Add($"AI: {initialResponse}");
+        Messages.Add($"AI: {initialResponse.NarratorMessage.Content}");
     }
 
     private async Task LoadConversationHistory(string conversationId)
     {
         var history = await GPTNarratorService.GetConversationHistoryAsync(conversationId);
-        Messages = history.Select(msg => $"AI: {msg}").ToList();
+        Messages = history.Messages.Select(msg => $"AI: {msg.Content}").ToList();
     }
 
 
