@@ -18,17 +18,15 @@ namespace Application.Services.CampaignServices
 
         private readonly HttpClient httpClient;
         private readonly IConfiguration _config;
-        private readonly IGPTNarratorRepository _conversationRepository;
 
         #endregion
 
         #region Constructor
 
-        public GPTNarratorService(HttpClient httpClient, IConfiguration config, IGPTNarratorRepository conversationRepository)
+        public GPTNarratorService(HttpClient httpClient, IConfiguration config)
         {
             this.httpClient = httpClient;
             _config = config;
-            _conversationRepository = conversationRepository;
 
             // Set up authorization header for the OpenAI API.
             this.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _config["OpenAI:ApiKey"]);

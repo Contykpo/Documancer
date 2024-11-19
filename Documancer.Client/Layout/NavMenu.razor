@@ -29,17 +29,20 @@
         var customAuthenticationStateProvider = (CustomAuthenticationStateProvider)AuthenticationStateProvider;
         var authenticationState = await customAuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        var userData = await UserAccountService.GetUserCampaignsAsync(new UserDataDTO
+        if (authenticationState.User.Identity.IsAuthenticated)
+        {
+            var userData = await UserAccountService.GetUserCampaignsAsync(new UserDataDTO
             {
                 EmailAddress = authenticationState.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)!.Value
             });
 
-        if (userData.Flag && userData.Campaigns != null)
-        {
-            foreach (var campaign in userData.Campaigns)
+            if (userData.Flag && userData.Campaigns != null)
             {
-                Campaigns.Add(campaign);
-            }
+                foreach (var campaign in userData.Campaigns)
+                {
+                    Campaigns.Add(campaign);
+                }
+            }            
         }
     }
 }

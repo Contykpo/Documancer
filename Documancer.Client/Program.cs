@@ -22,7 +22,8 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IGPTNarratorService, GPTNarratorService>();
-builder.Services.AddScoped<ICampaignService, CampaignService>();
+
+builder.Services.AddTransient<ICampaignService, CampaignService>();
 
 builder.Services.AddBlazoredLocalStorage();
 

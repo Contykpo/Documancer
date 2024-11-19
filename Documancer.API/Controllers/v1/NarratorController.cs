@@ -37,8 +37,8 @@ namespace Documancer.API.Controllers.v1
             // Save the initial messages to the database under the new conversation ID:
             var narratorId = await _GPTNarratorRepository.CreateNewConversationAsync(request.ConversationId, request.OwnerCampaignId);
 
-            await _GPTNarratorRepository.SaveMessageAsync(Guid.Parse(request.ConversationId), request.ConversationId, "user", request.AssociatedPrompt);
-            await _GPTNarratorRepository.SaveMessageAsync(Guid.Parse(request.ConversationId), request.ConversationId, "assistant", request.Content);
+            await _GPTNarratorRepository.SaveMessageAsync(request.OwnerNarratorId, request.ConversationId, "user", request.AssociatedPrompt);
+            await _GPTNarratorRepository.SaveMessageAsync(request.OwnerNarratorId, request.ConversationId, "assistant", request.Content);
 
             return Ok(narratorId);
         }
